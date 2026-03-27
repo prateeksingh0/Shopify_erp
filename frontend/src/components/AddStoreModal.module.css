@@ -1,0 +1,104 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: #000000cc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.modal {
+  background: #0e0e0e;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  padding: 24px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: #f59e0b;
+  border-bottom: 1px solid #1e1e1e;
+  padding-bottom: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #555;
+}
+
+.input {
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  border-radius: 3px;
+  padding: 8px 10px;
+  color: #e2e2e2;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+
+.input:focus { border-color: #f59e0b55; }
+
+.error {
+  font-size: 11px;
+  color: #ef4444;
+  background: #2b0d0d;
+  border: 1px solid #ef444433;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+.cancelBtn {
+  background: none;
+  border: 1px solid #2a2a2a;
+  border-radius: 3px;
+  padding: 6px 16px;
+  color: #555;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: all 0.15s;
+}
+.cancelBtn:hover { border-color: #444; color: #888; }
+
+.addBtn {
+  background: #1a1500;
+  border: 1px solid #f59e0b55;
+  border-radius: 3px;
+  padding: 6px 16px;
+  color: #f59e0b;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: all 0.15s;
+}
+.addBtn:hover:not(:disabled) { background: #251f00; border-color: #f59e0b; }
+.addBtn:disabled { opacity: 0.4; cursor: not-allowed; }

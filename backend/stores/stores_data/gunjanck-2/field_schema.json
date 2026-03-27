@@ -1,0 +1,78 @@
+{
+  "enums": {
+    "Variant Inventory Policy": [
+      "DENY",
+      "CONTINUE"
+    ],
+    "Variant Weight Unit": [
+      "KILOGRAMS",
+      "GRAMS",
+      "POUNDS",
+      "OUNCES"
+    ]
+  },
+  "validations": {
+    "Variant Price": {
+      "type": "decimal",
+      "min": 0
+    },
+    "Variant Compare At Price": {
+      "type": "decimal",
+      "min": 0
+    },
+    "Cost per item": {
+      "type": "decimal",
+      "min": 0
+    },
+    "Variant Grams": {
+      "type": "decimal",
+      "min": 0
+    },
+    "SEO Title": {
+      "type": "text",
+      "max_length": 70
+    },
+    "SEO Description": {
+      "type": "text",
+      "max_length": 320
+    },
+    "Inventory Qty -": {
+      "type": "integer",
+      "min": 0,
+      "prefix_match": true
+    },
+    "Title": {
+      "type": "required"
+    },
+    "Image URLs": {
+      "type": "url_list"
+    },
+    "Collection Handles": {
+      "type": "collection_handles"
+    },
+    "Option1 Name": {
+      "type": "paired",
+      "partner": "Option1 Value"
+    },
+    "Option1 Value": {
+      "type": "paired",
+      "partner": "Option1 Name"
+    },
+    "Option2 Name": {
+      "type": "paired",
+      "partner": "Option2 Value"
+    },
+    "Option2 Value": {
+      "type": "paired",
+      "partner": "Option2 Name"
+    },
+    "Option3 Name": {
+      "type": "paired",
+      "partner": "Option3 Value"
+    },
+    "Option3 Value": {
+      "type": "paired",
+      "partner": "Option3 Name"
+    }
+  }
+}

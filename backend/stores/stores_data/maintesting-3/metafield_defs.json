@@ -1,0 +1,49 @@
+{
+  "product": {
+    "test_data.snowboard_length": {
+      "name": "Snowboard length",
+      "type": "dimension",
+      "choices": null,
+      "min": null,
+      "max": null,
+      "regex": null
+    },
+    "test_data.binding_mount": {
+      "name": "Snowboard binding mount",
+      "type": "single_line_text_field",
+      "choices": null,
+      "min": null,
+      "max": null,
+      "regex": null
+    },
+    "custom.testing": {
+      "name": "TESTING",
+      "type": "single_line_text_field",
+      "choices": [
+        "1",
+        "2",
+        "2.2"
+      ],
+      "min": null,
+      "max": null,
+      "regex": null
+    },
+    "custom.main_testing": {
+      "name": "MAIN TESTING",
+      "type": "single_line_text_field",
+      "choices": null,
+      "min": null,
+      "max": null,
+      "regex": null
+    },
+    "custom.hello": {
+      "name": "HELLO",
+      "type": "single_line_text_field",
+      "choices": null,
+      "min": null,
+      "max": null,
+      "regex": null
+    }
+  },
+  "variant": {}
+}

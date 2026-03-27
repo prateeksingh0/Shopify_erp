@@ -1,0 +1,61 @@
+.bar {
+  flex-shrink: 0;
+  border-bottom: 1px solid #d5c6ad;
+  padding: 4px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 32px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.track {
+  width: 160px;
+  height: 3px;
+  background: #1e1e1e;
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.fill {
+  height: 100%;
+  background: #10b981;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.fillDone { background: #10b981; }
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.pct {
+  font-size: 11px;
+  font-weight: 600;
+  color: #10b981;
+  min-width: 32px;
+}
+
+.progress {
+  font-size: 10px;
+  color: #444;
+}
+
+.done {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: #10b981;
+}
+
+.duration {
+  font-size: 10px;
+  color: #444;
+  margin-left: auto;
+}

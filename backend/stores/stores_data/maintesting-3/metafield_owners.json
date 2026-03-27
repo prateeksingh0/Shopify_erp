@@ -1,0 +1,10 @@
+{
+  "custom.testing": "product",
+  "global.title_tag": "product",
+  "global.description_tag": "product",
+  "test_data.binding_mount": "product",
+  "test_data.snowboard_weight": "product",
+  "test_data.snowboard_length": "product",
+  "custom.hello": "product",
+  "custom.main_testing": "product"
+}
