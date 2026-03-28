@@ -1,0 +1,174 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    height: 44px;
+    background: rgba(255, 251, 245, 0.96);
+    border-bottom: 1px solid #d8cdb9;
+    flex-shrink: 0;
+    overflow: visible;
+}
+
+.pageTitle {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: #8f4f00;
+    flex-shrink: 0;
+}
+
+.divider {
+    width: 1px;
+    height: 20px;
+    background: #d7c8af;
+    flex-shrink: 0;
+}
+
+.spacer {
+    flex: 1;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 10px;
+    height: 26px;
+    background: #fffaf1;
+    border: 1px solid #d5c6ad;
+    border-radius: 6px;
+    color: #6f5a3f;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.btn:hover:not(:disabled) {
+    border-color: #c27a1a;
+    color: #8f4f00;
+    background: #fff1d6;
+}
+
+.btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.btnSync:hover:not(:disabled) {
+    border-color: #0f8a5f;
+    color: #0f8a5f;
+    background: #e8f8f0;
+}
+
+.btnActive {
+    border-color: #c27a1a !important;
+    color: #8f4f00 !important;
+    background: #fff0d3 !important;
+}
+
+.btnSync.btnActive {
+    border-color: #0f8a5f !important;
+    color: #0f8a5f !important;
+    background: #e3f7ee !important;
+}
+
+.spinner {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border: 1.5px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.viewToggle {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: #f0e8d8;
+    border: 1px solid #d5c6ad;
+    border-radius: 6px;
+    padding: 2px;
+}
+
+.viewBtn {
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    height: 20px;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    color: #9b8a73;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.viewBtn:hover {
+    color: #6f5a3f;
+}
+
+.viewBtnActive {
+    background: #fffaf1;
+    color: #8f4f00;
+    box-shadow: 0 1px 3px #0000001a;
+}
+
+.statusMsg {
+    font-size: 11px;
+    color: #7a6a56;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rowCount {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+    flex-shrink: 0;
+}
+
+.rowCountNum {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2f2417;
+}
+
+.rowCountLabel {
+    font-size: 10px;
+    color: #9b8a73;
+    letter-spacing: 0.1em;
+}
+
+.content {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}

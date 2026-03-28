@@ -3,113 +3,167 @@
 
 const BASE = '/api'
 
-// ── Stores ────────────────────────────────────────────────────────────────
+// ── Auth helpers ──────────────────────────────────────────────────────────
 
-export async function getStores() {
-    const r = await fetch(`${BASE}/stores/`)
+export function getAccessToken() {
+    return localStorage.getItem('access_token')
+}
+
+export function setTokens(access, refresh) {
+    localStorage.setItem('access_token', access)
+    localStorage.setItem('refresh_token', refresh)
+}
+
+export function clearTokens() {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+}
+
+function authHeaders() {
+    const token = getAccessToken()
+    return {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    }
+}
+
+async function apiFetch(url, options = {}) {
+    const r = await fetch(url, {
+        ...options,
+        headers: { ...authHeaders(), ...(options.headers || {}) },
+    })
+    if (r.status === 401) {
+        clearTokens()
+        window.location.href = '/login'
+        return
+    }
     if (!r.ok) throw new Error(await r.text())
     return r.json()
 }
 
-export async function addStore(domain, clientId, clientSecret) {
-    const r = await fetch(`${BASE}/stores/`, {
+// ── Auth endpoints ────────────────────────────────────────────────────────
+
+export async function login(username, password) {
+    const r = await fetch(`${BASE}/auth/login/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ domain, client_id: clientId, client_secret: clientSecret }),
+        body: JSON.stringify({ username, password }),
     })
     if (!r.ok) throw new Error(await r.text())
-    return r.json()
+    const data = await r.json()
+    setTokens(data.access, data.refresh)
+    return data
+}
+
+export async function register(username, password, email = '') {
+    const r = await fetch(`${BASE}/auth/register/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, email }),
+    })
+    if (!r.ok) throw new Error(await r.text())
+    const data = await r.json()
+    setTokens(data.access, data.refresh)
+    return data
+}
+
+export async function logout(refreshToken) {
+    await fetch(`${BASE}/auth/logout/`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ refresh: refreshToken }),
+    })
+    clearTokens()
+}
+
+export async function getMe() {
+    return apiFetch(`${BASE}/auth/me/`)
+}
+
+// ── Stores ────────────────────────────────────────────────────────────────
+
+export async function getStores() {
+    return apiFetch(`${BASE}/stores/`)
+}
+
+export async function addStore(domain, clientId, clientSecret) {
+    return apiFetch(`${BASE}/stores/`, {
+        method: 'POST',
+        body: JSON.stringify({ domain, client_id: clientId, client_secret: clientSecret }),
+    })
 }
 
 // ── Fetch (bulk export) ───────────────────────────────────────────────────
 
 export async function triggerFetch(store) {
-    const r = await fetch(`${BASE}/stores/${store}/fetch/`, { method: 'POST' })
-    if (!r.ok) throw new Error(await r.text())
-    return r.json()
+    return apiFetch(`${BASE}/stores/${store}/fetch/`, { method: 'POST' })
 }
 
 // ── Products ──────────────────────────────────────────────────────────────
 
 export async function getProducts(store) {
-    const r = await fetch(`${BASE}/stores/${store}/products/`)
-    if (!r.ok) throw new Error(await r.text())
-    return r.json()
+    return apiFetch(`${BASE}/stores/${store}/products/`)
 }
 
 export async function getLocations(store) {
-    const r = await fetch(`${BASE}/stores/${store}/locations/`)
-    if (!r.ok) throw new Error(await r.text())
-    return r.json()
+    return apiFetch(`${BASE}/stores/${store}/locations/`)
 }
 
 export async function getCollectionHandles(store) {
-    const r = await fetch(`${BASE}/stores/${store}/collection-handles/`)
-    if (!r.ok) throw new Error(await r.text())
-    return r.json()
+    return apiFetch(`${BASE}/stores/${store}/collection-handles/`)
 }
 
 export async function getMetafieldDefs(store) {
-    const r = await fetch(`${BASE}/stores/${store}/metafield-defs/`)
-    if (!r.ok) throw new Error(await r.text())
-    return r.json()
+    return apiFetch(`${BASE}/stores/${store}/metafield-defs/`)
 }
 
 export async function getMetafieldOwners(store) {
-    const r = await fetch(`${BASE}/stores/${store}/metafield-owners/`)
-    if (!r.ok) throw new Error(await r.text())
-    return r.json()
+    return apiFetch(`${BASE}/stores/${store}/metafield-owners/`)
 }
 
 export async function getFieldSchema(store) {
-    const r = await fetch(`${BASE}/stores/${store}/field-schema/`)
-    if (!r.ok) throw new Error(await r.text())
-    return r.json()
+    return apiFetch(`${BASE}/stores/${store}/field-schema/`)
 }
 
 // ── Sync ──────────────────────────────────────────────────────────────────
 
-// Triggers sync by sending a message over the already-open WebSocket
 export async function startSync(store) {
-    const r = await fetch(`${BASE}/stores/${store}/sync/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-    })
-    if (!r.ok) throw new Error(await r.text())
-    return r.json()
+    return apiFetch(`${BASE}/stores/${store}/sync/`, { method: 'POST' })
 }
 
 export async function syncProduct(store, productId, productRow, variantRows) {
     const encoded = encodeURIComponent(productId)
-    const r = await fetch(`${BASE}/stores/${store}/sync/product/${encoded}/`, {
+    return apiFetch(`${BASE}/stores/${store}/sync/product/${encoded}/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productRow, variantRows }),
     })
-    if (!r.ok) throw new Error(await r.text())
-    return r.json()
 }
 
 // ── Snapshots ─────────────────────────────────────────────────────────────
 
 export async function getSnapshots(store) {
-    const r = await fetch(`${BASE}/stores/${store}/snapshots/`)
-    if (!r.ok) throw new Error(await r.text())
-    return r.json()
+    return apiFetch(`${BASE}/stores/${store}/snapshots/`)
 }
 
 export async function rollbackPreview(store, timestamp) {
-    const r = await fetch(`${BASE}/stores/${store}/snapshots/${timestamp}/rollback/`, { method: 'POST' })
-    if (!r.ok) throw new Error(await r.text())
-    return r.json()
+    return apiFetch(`${BASE}/stores/${store}/snapshots/${timestamp}/rollback/`, { method: 'POST' })
 }
 
 export async function saveProducts(storeName, rows) {
-    const res = await fetch(`/api/stores/${storeName}/save/`, {
+    return apiFetch(`${BASE}/stores/${storeName}/save/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rows })
+        body: JSON.stringify({ rows }),
     })
-    if (!res.ok) throw new Error(`Save failed: ${res.status}`)
-    return res.json()
+}
+
+export async function getSyncLogs(store) {
+    return apiFetch(`${BASE}/stores/${store}/sync/logs/`)
+}
+
+export async function deleteStore(storeName) {
+    return apiFetch(`${BASE}/stores/${storeName}/`, { method: 'DELETE' })
+}
+
+export async function clearStoreData(storeName) {
+    return apiFetch(`${BASE}/stores/${storeName}/clear-data/`, { method: 'POST' })
 }

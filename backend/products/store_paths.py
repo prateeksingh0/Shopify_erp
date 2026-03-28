@@ -20,7 +20,7 @@ def initialize_store_paths():
     if not config.STORE_NAME:
         raise Exception("[PATHS] STORE_NAME not configured")
 
-    STORE_DIR       = os.path.join(BASE_DIR, config.STORE_NAME)
+    STORE_DIR       = os.path.join(BASE_DIR, str(config.USER_ID), config.STORE_NAME)
     DATA_DIR        = os.path.join(STORE_DIR, "data")
     SNAPSHOT_DIR    = os.path.join(STORE_DIR, "snapshots")
     BULK_DIR        = os.path.join(STORE_DIR, "bulk")
@@ -32,6 +32,7 @@ def initialize_store_paths():
     os.makedirs(IMAGE_CACHE_DIR, exist_ok=True)
 
     print("[PATHS] Store directory initialized")
+    print("[PATHS] User ID:",      config.USER_ID)
     print("[PATHS] Store:",        config.STORE_NAME)
     print("[PATHS] Data dir:",     DATA_DIR)
     print("[PATHS] Snapshot dir:", SNAPSHOT_DIR)

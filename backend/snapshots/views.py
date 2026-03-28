@@ -6,34 +6,34 @@ import pandas as pd
 from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 
 from stores.models import Store
 
 
-def get_store_or_404(store_name):
+def get_store_or_404(store_name, user):
     try:
-        return Store.objects.get(store_name=store_name)
+        return Store.objects.get(store_name=store_name, user=user)
     except Store.DoesNotExist:
         return None
 
 
-def get_snapshots_dir(store_name):
+def get_store_base(user_id, store_name):
     base = getattr(settings, 'SHOPIFY_DATA_ROOT', '')
-    return os.path.join(base, store_name, 'snapshots')
+    return os.path.join(base, str(user_id), store_name)
 
 
 class SnapshotListView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, store_name):
-        store = get_store_or_404(store_name)
+        store = get_store_or_404(store_name, request.user)
         if not store:
             return Response({'error': 'Store not found'}, status=404)
 
-        snapshots_dir = get_snapshots_dir(store_name)
+        snapshots_dir = os.path.join(get_store_base(request.user.id, store_name), 'snapshots')
         pattern = os.path.join(snapshots_dir, 'snapshot_*.json')
-        files = sorted(glob.glob(pattern), reverse=True)  # newest first
+        files = sorted(glob.glob(pattern), reverse=True)
 
         snapshots = []
         for f in files:
@@ -53,14 +53,14 @@ class SnapshotListView(APIView):
 
 
 class SnapshotDetailView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, store_name, timestamp):
-        store = get_store_or_404(store_name)
+        store = get_store_or_404(store_name, request.user)
         if not store:
             return Response({'error': 'Store not found'}, status=404)
 
-        snapshots_dir = get_snapshots_dir(store_name)
+        snapshots_dir = os.path.join(get_store_base(request.user.id, store_name), 'snapshots')
 
         if timestamp == 'latest':
             filepath = os.path.join(snapshots_dir, 'latest_snapshot.json')
@@ -77,26 +77,23 @@ class SnapshotDetailView(APIView):
 
 
 class SnapshotRollbackView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, store_name, timestamp):
-        store = get_store_or_404(store_name)
+        store = get_store_or_404(store_name, request.user)
         if not store:
             return Response({'error': 'Store not found'}, status=404)
 
-        snapshots_dir = get_snapshots_dir(store_name)
+        snapshots_dir = os.path.join(get_store_base(request.user.id, store_name), 'snapshots')
         filepath = os.path.join(snapshots_dir, f'snapshot_{timestamp}.json')
 
         if not os.path.exists(filepath):
             return Response({'error': 'Snapshot not found'}, status=404)
 
-        # Load chosen snapshot
         with open(filepath, 'r', encoding='utf-8') as f:
             snapshot = json.load(f)
 
-        # Load current CSV
-        base = getattr(settings, 'SHOPIFY_DATA_ROOT', '')
-        csv_path = os.path.join(base, store_name, 'data', 'products_master.csv')
+        csv_path = os.path.join(get_store_base(request.user.id, store_name), 'data', 'products_master.csv')
 
         if not os.path.exists(csv_path):
             return Response({'error': 'No current data. Run fetch first.'}, status=404)
@@ -104,14 +101,12 @@ class SnapshotRollbackView(APIView):
         current_df = pd.read_csv(csv_path, dtype=str).fillna('')
         current_rows = current_df.to_dict(orient='records')
 
-        # Build lookup: variant_id → current row
         current_by_variant = {
             row.get('Variant ID'): row
             for row in current_rows
             if row.get('Variant ID')
         }
 
-        # Build snapshot rows from snapshot data
         snapshot_data = snapshot.get('data', {})
         snapshot_rows = []
         changed_indices = []
@@ -122,20 +117,18 @@ class SnapshotRollbackView(APIView):
                 variant = variant_entry.get('variant', {})
                 variant_id = variant.get('id')
 
-                # Build a comparable row from snapshot
                 snap_row = {
-                    'Product ID': product_id,
-                    'Variant ID': variant_id,
-                    'Title':      product.get('title', ''),
-                    'Vendor':     product.get('vendor', ''),
-                    'Status':     product.get('status', ''),
+                    'Product ID':    product_id,
+                    'Variant ID':    variant_id,
+                    'Title':         product.get('title', ''),
+                    'Vendor':        product.get('vendor', ''),
+                    'Status':        product.get('status', ''),
                     'Variant Price': variant.get('price', ''),
                     'Variant SKU':   variant.get('sku', ''),
                 }
 
                 snapshot_rows.append(snap_row)
 
-                # Mark as changed if different from current
                 current = current_by_variant.get(variant_id)
                 if not current:
                     changed_indices.append(len(snapshot_rows) - 1)

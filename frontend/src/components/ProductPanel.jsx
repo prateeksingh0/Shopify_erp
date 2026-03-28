@@ -344,10 +344,9 @@ function VariantRow({ vr, idx, activeVariant, setActiveVariant, onDelete }) {
                 <div className={styles.vrPrice}>{price !== '—' ? `$${price}` : '—'}</div>
                 <div className={styles.vrInv}>{inv} in stock</div>
             </div>
-            {!vr['Variant ID'] && (
-                <button className={styles.vrDelete}
-                    onClick={e => { e.stopPropagation(); onDelete(idx) }}>✕</button>
-            )}
+            <button className={styles.vrDelete}
+                onClick={e => { e.stopPropagation(); onDelete(idx) }}>✕
+            </button>
         </div>
     )
 }
@@ -355,7 +354,7 @@ function VariantRow({ vr, idx, activeVariant, setActiveVariant, onDelete }) {
 // ── Main component ────────────────────────────────────────────────────────────
 export default function ProductPanel({
     product, allKeys, productLevelKeys,
-    onClose, onSave,
+    onClose, onSave, onDelete,
     selectedStore, isSyncing, setIsSyncing,
     fieldSchema = { enums: {}, validations: {} },
     storeCollectionHandles = [],
@@ -455,12 +454,6 @@ export default function ProductPanel({
         setDirty(true)
     }
 
-    function deleteVariant(idx) {
-        setVariantRows(prev => prev.filter((_, i) => i !== idx))
-        setActiveVariant(v => Math.max(0, v >= idx ? v - 1 : v))
-        setDirty(true)
-    }
-
     async function handleSync() {
         if (!selectedStore) return
         setSyncStatus('syncing'); setIsSyncing(true)
@@ -479,6 +472,69 @@ export default function ProductPanel({
             if (!pid) onClose()
         } catch {
             setSyncStatus('error')
+        } finally {
+            setIsSyncing(false)
+        }
+    }
+
+    async function handleDeleteProduct() {
+        if (!productRow['Product ID']) return
+        if (!confirm(`Delete "${productRow['Title']}"? This cannot be undone.`)) return
+
+        setSyncStatus('syncing')
+        setIsSyncing(true)
+        try {
+            // Mark all variant rows for deletion
+            const markedVariants = variantRows.map(vr => ({ ...vr, 'Delete': 'YES' }))
+            const markedProduct = { ...productRow, 'Delete': 'YES' }
+
+            await syncProduct(
+                selectedStore.store_name,
+                productRow['Product ID'],
+                markedProduct,
+                markedVariants
+            )
+            if (onDelete) onDelete(productRow['Product ID'])
+            onClose()
+        } catch (e) {
+            setSyncStatus('error')
+            console.error(e)
+        } finally {
+            setIsSyncing(false)
+        }
+    }
+
+    async function handleDeleteVariant(idx) {
+        const vr = variantRows[idx]
+        const vid = vr['Variant ID']
+
+        // New variant (no ID) — just remove locally
+        if (!vid || vid === '' || vid.toLowerCase() === 'nan') {
+            setVariantRows(prev => prev.filter((_, i) => i !== idx))
+            setActiveVariant(v => Math.max(0, v >= idx ? v - 1 : v))
+            setDirty(true)
+            return
+        }
+
+        if (!confirm('Delete this variant? This cannot be undone.')) return
+
+        setSyncStatus('syncing')
+        setIsSyncing(true)
+        try {
+            const markedVariant = { ...vr, 'Delete': 'YES' }
+            await syncProduct(
+                selectedStore.store_name,
+                productRow['Product ID'],
+                productRow,
+                [markedVariant]
+            )
+            setVariantRows(prev => prev.filter((_, i) => i !== idx))
+            setActiveVariant(v => Math.max(0, v >= idx ? v - 1 : v))
+            setSyncStatus('done')
+            setDirty(false)
+        } catch (e) {
+            setSyncStatus('error')
+            console.error(e)
         } finally {
             setIsSyncing(false)
         }
@@ -509,6 +565,12 @@ export default function ProductPanel({
                     </div>
                     <div className={styles.topActions}>
                         {dirty && <span className={styles.unsavedDot} title="Unsaved changes">●</span>}
+                        {productRow['Product ID'] && (
+                            <button className={styles.deleteBtn} onClick={handleDeleteProduct}
+                                disabled={isSyncing}>
+                                🗑 Delete
+                            </button>
+                        )}
                         <button className={styles.syncBtn} onClick={handleSync}
                             disabled={isSyncing || (!productRow['Product ID'] && !productRow['Title'])}>
                             {syncStatus === 'syncing' ? '…' : syncStatus === 'done' ? '✓ Synced' : syncStatus === 'error' ? '✕ Error' : '⟳ Sync'}
@@ -549,7 +611,7 @@ export default function ProductPanel({
                                     <VariantRow key={i} vr={vr} idx={i}
                                         activeVariant={activeVariant}
                                         setActiveVariant={setActiveVariant}
-                                        onDelete={deleteVariant} />
+                                        onDelete={handleDeleteVariant} />
                                 ))}
                             </div>
                             <button className={styles.addVariantBtn} onClick={addVariant}>

@@ -1,0 +1,212 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    height: 44px;
+    background: rgba(255, 251, 245, 0.96);
+    border-bottom: 1px solid #d8cdb9;
+    flex-shrink: 0;
+}
+
+.pageTitle {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: #8f4f00;
+}
+
+.body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    max-width: 680px;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sectionTitle {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: #8b7a62;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #d8cdb9;
+}
+
+.hint {
+    font-size: 12px;
+    color: #9b8a73;
+}
+
+.msg {
+    font-size: 12px;
+    color: #c27a1a;
+}
+
+.msgOk {
+    font-size: 12px;
+    color: #0f8a5f;
+}
+
+.msgErr {
+    font-size: 12px;
+    color: #ef4444;
+}
+
+/* ── Store rows ──────────────────────────────────────────────────────────── */
+.storeRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #fffdf8;
+    border: 1px solid #d8cdb9;
+    border-radius: 6px;
+}
+
+.storeInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.storeName {
+    font-size: 12px;
+    font-weight: 600;
+    color: #2f2417;
+}
+
+.storeDomain {
+    font-size: 11px;
+    color: #9b8a73;
+}
+
+.storeActions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.storeDate {
+    font-size: 10px;
+    color: #9b8a73;
+}
+
+.deleteBtn {
+    padding: 4px 10px;
+    background: none;
+    border: 1px solid #ef444455;
+    border-radius: 4px;
+    color: #ef4444;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.deleteBtn:hover {
+    background: #fff0f0;
+    border-color: #ef4444;
+}
+
+/* ── Change password form ─────────────────────────────────────────────────── */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: #8b7a62;
+}
+
+.input {
+    padding: 8px 12px;
+    background: #fffdf8;
+    border: 1px solid #d5c6ad;
+    border-radius: 6px;
+    color: #2f2417;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.15s;
+    max-width: 360px;
+}
+
+.input:focus {
+    border-color: #c27a1a;
+    box-shadow: 0 0 0 3px #f2d2a433;
+}
+
+.saveBtn {
+    width: fit-content;
+    padding: 8px 20px;
+    background: #fffaf1;
+    border: 1px solid #d5c6ad;
+    border-radius: 6px;
+    color: #6f5a3f;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.saveBtn:hover:not(:disabled) {
+    border-color: #c27a1a;
+    color: #8f4f00;
+    background: #fff1d6;
+}
+
+.saveBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.clearBtn {
+    padding: 4px 10px;
+    background: none;
+    border: 1px solid #d5c6ad;
+    border-radius: 4px;
+    color: #8b7a62;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.clearBtn:hover {
+    background: #fff3dc;
+    border-color: #c27a1a;
+    color: #8f4f00;
+}

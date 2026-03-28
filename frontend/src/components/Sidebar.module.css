@@ -1,0 +1,44 @@
+.sidebar {
+    width: 180px;
+    flex-shrink: 0;
+    background: #faf5ec;
+    border-right: 1px solid #d8cdb9;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    overflow-y: auto;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    color: #8b7a62;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+}
+
+.item:hover {
+    background: #fff3dc55;
+    color: #6f5a3f;
+}
+
+.itemActive {
+    color: #8f4f00;
+    background: #fff3dc;
+    border-left-color: #c27a1a;
+}
+
+.icon {
+    font-size: 14px;
+}
+
+.label {
+    flex: 1;
+}

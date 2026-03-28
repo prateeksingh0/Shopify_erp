@@ -220,6 +220,10 @@ export default function ShopifyView({
                     metafieldDefs={metafieldDefs}
                     metafieldOwners={metafieldOwners}
                     allRows={rows}
+                    onDelete={(productId) => {
+                        setRows(prev => prev.filter(r => r['Product ID'] !== productId))
+                        setOpenProduct(null)
+                    }}
                 />
             )}
         </div>

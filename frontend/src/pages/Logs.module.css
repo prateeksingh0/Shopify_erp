@@ -1,0 +1,146 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    height: 44px;
+    background: rgba(255, 251, 245, 0.96);
+    border-bottom: 1px solid #d8cdb9;
+    flex-shrink: 0;
+}
+
+.pageTitle {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: #8f4f00;
+}
+
+.storeName {
+    font-size: 11px;
+    color: #9b8a73;
+}
+
+.body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.empty {
+    font-size: 12px;
+    color: #9b8a73;
+    padding: 32px 0;
+    text-align: center;
+}
+
+.error {
+    font-size: 12px;
+    color: #ef4444;
+    padding: 16px 0;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.table th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: #8b7a62;
+    border-bottom: 1px solid #d8cdb9;
+    white-space: nowrap;
+}
+
+.table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid #ede5d8;
+    color: #3d2f1f;
+    white-space: nowrap;
+}
+
+.table tr:hover td {
+    background: #fffaf1;
+}
+
+.rowError td {
+    background: #fff5f5;
+}
+
+.time {
+    color: #6f5a3f;
+    font-size: 11px;
+}
+
+.statusOk {
+    color: #0f8a5f;
+    background: #e3f7ee;
+    border: 1px solid #0f8a5f33;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.statusErr {
+    color: #ef4444;
+    background: #fff0f0;
+    border: 1px solid #ef444433;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.green {
+    color: #0f8a5f;
+    font-weight: 600;
+}
+
+.purple {
+    color: #6366f1;
+    font-weight: 600;
+}
+
+.red {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.yellow {
+    color: #d97706;
+    font-weight: 600;
+}
+
+.typeFetch {
+    color: #6366f1;
+    background: #eef2ff;
+    border: 1px solid #6366f133;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.typeSync {
+    color: #0f8a5f;
+    background: #e3f7ee;
+    border: 1px solid #0f8a5f33;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+}

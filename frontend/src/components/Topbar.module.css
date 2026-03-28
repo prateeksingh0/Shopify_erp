@@ -1,0 +1,128 @@
+.topbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    height: 48px;
+    background: rgba(255, 251, 245, 0.96);
+    border-bottom: 1px solid #d8cdb9;
+    flex-shrink: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    z-index: 100;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.brandDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #c27a1a;
+    box-shadow: 0 0 0 4px #f2d2a433;
+}
+
+.brandText {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: #8f4f00;
+}
+
+.divider {
+    width: 1px;
+    height: 24px;
+    background: #d7c8af;
+    flex-shrink: 0;
+}
+
+.storeSection {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: #8b7a62;
+    flex-shrink: 0;
+}
+
+.select {
+    background: #fffdf8;
+    border: 1px solid #d5c6ad;
+    border-radius: 6px;
+    color: #2f2417;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    padding: 4px 8px;
+    cursor: pointer;
+    outline: none;
+    min-width: 200px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.select:hover {
+    border-color: #b89866;
+}
+
+.select:focus {
+    border-color: #c27a1a;
+    box-shadow: 0 0 0 3px #f2d2a455;
+}
+
+.addBtn {
+    background: #fffaf1;
+    border: 1px solid #d5c6ad;
+    border-radius: 6px;
+    color: #8b6b45;
+    font-size: 16px;
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+
+.addBtn:hover {
+    border-color: #c27a1a;
+    color: #8f4f00;
+    background: #fff3dc;
+}
+
+.spacer {
+    flex: 1;
+}
+
+.logoutBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 10px;
+    height: 28px;
+    background: #fffaf1;
+    border: 1px solid #d5c6ad;
+    border-radius: 6px;
+    color: #6f5a3f;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.logoutBtn:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: #fff0f0;
+}
