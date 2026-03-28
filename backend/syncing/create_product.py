@@ -44,6 +44,7 @@ def create_product(row):
 
     product_input = {
         "title":           title,
+        "handle":          clean_string(row.get("Handle")) or None,
         "descriptionHtml": clean_string(row.get("Body (HTML)")),
         "vendor":          clean_string(row.get("Vendor")),
         "productType":     clean_string(row.get("Type")),

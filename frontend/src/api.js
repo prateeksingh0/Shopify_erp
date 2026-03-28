@@ -79,6 +79,17 @@ export async function startSync(store) {
     return r.json()
 }
 
+export async function syncProduct(store, productId, productRow, variantRows) {
+    const encoded = encodeURIComponent(productId)
+    const r = await fetch(`${BASE}/stores/${store}/sync/product/${encoded}/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productRow, variantRows }),
+    })
+    if (!r.ok) throw new Error(await r.text())
+    return r.json()
+}
+
 // ── Snapshots ─────────────────────────────────────────────────────────────
 
 export async function getSnapshots(store) {

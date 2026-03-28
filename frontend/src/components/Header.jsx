@@ -5,7 +5,7 @@ import styles from './Header.module.css'
 export default function Header({
     selectedStore, onStoreSelect, onRowsLoaded, onAddStore, onRollback,
     isFetching, setIsFetching, isSyncing, setIsSyncing,
-    rows, onSyncSummary, onSyncStart, storesRefreshKey
+    rows, onSyncSummary, onSyncStart, storesRefreshKey, activeView, onViewChange
 }) {
     const [stores, setStores] = useState([])
     const [fetchMsg, setFetchMsg] = useState('')
@@ -341,6 +341,26 @@ export default function Header({
                 >
                     <span className={styles.icon}>↩</span> ROLLBACK
                 </button>
+
+                <div className={styles.divider} />
+
+                {/* View toggle */}
+                <div className={styles.viewToggle}>
+                    <button
+                        className={`${styles.viewBtn} ${activeView === 'excel' ? styles.viewBtnActive : ''}`}
+                        onClick={() => onViewChange('excel')}
+                        title="Excel View"
+                    >
+                        ⊞ EXCEL
+                    </button>
+                    <button
+                        className={`${styles.viewBtn} ${activeView === 'shopify' ? styles.viewBtnActive : ''}`}
+                        onClick={() => onViewChange('shopify')}
+                        title="Shopify View"
+                    >
+                        ◈ SHOPIFY
+                    </button>
+                </div>
 
                 <div className={styles.divider} />
 

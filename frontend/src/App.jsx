@@ -4,6 +4,7 @@ import ProductGrid from './components/ProductGrid'
 import SyncProgress from './components/SyncProgress'
 import AddStoreModal from './components/AddStoreModal'
 import RollbackPanel from './components/RollbackPanel'
+import ShopifyView from './components/ShopifyView'
 import styles from './App.module.css'
 import { getMetafieldDefs, getMetafieldOwners, getFieldSchema, getCollectionHandles } from './api'
 
@@ -22,6 +23,7 @@ export default function App() {
   const [metafieldOwners, setMetafieldOwners] = useState({})
   const [fieldSchema, setFieldSchema] = useState({ enums: {}, validations: {} })
   const [collectionHandles, setCollectionHandles] = useState([])
+  const [activeView, setActiveView] = useState('excel') // 'excel' | 'shopify'
 
   const handleStoreSelected = useCallback((store) => {
     setSelectedStore(store)
@@ -125,24 +127,41 @@ export default function App() {
         onSyncSummary={handleSyncSummary}
         onSyncStart={handleSyncStart}
         storesRefreshKey={storesRefreshKey}
+        activeView={activeView}
+        onViewChange={setActiveView}
       />
 
       <SyncProgress syncState={syncState} totalRows={rows.length} />
 
       <div className={styles.gridWrapper}>
-        <ProductGrid
-          rows={rows}
-          setRows={setRows}
-          syncState={syncState}
-          isSyncing={isSyncing}
-          selectedStore={selectedStore}
-          rollbackChangedIndices={rollbackChangedIndices}
-          loadKey={loadKey}
-          metafieldDefs={metafieldDefs}
-          metafieldOwners={metafieldOwners}
-          fieldSchema={fieldSchema}
-          storeCollectionHandles={collectionHandles}
-        />
+        {activeView === 'excel' ? (
+          <ProductGrid
+            rows={rows}
+            setRows={setRows}
+            syncState={syncState}
+            isSyncing={isSyncing}
+            selectedStore={selectedStore}
+            rollbackChangedIndices={rollbackChangedIndices}
+            loadKey={loadKey}
+            metafieldDefs={metafieldDefs}
+            metafieldOwners={metafieldOwners}
+            fieldSchema={fieldSchema}
+            storeCollectionHandles={collectionHandles}
+          />
+        ) : (
+          <ShopifyView
+            rows={rows}
+            setRows={setRows}
+            selectedStore={selectedStore}
+            isSyncing={isSyncing}
+            setIsSyncing={setIsSyncing}
+            fieldSchema={fieldSchema}
+            storeCollectionHandles={collectionHandles}
+            metafieldDefs={metafieldDefs}
+            metafieldOwners={metafieldOwners}  
+            onReload={handleRowsLoaded}
+          />
+        )}
       </div>
 
       {showAddStore && (

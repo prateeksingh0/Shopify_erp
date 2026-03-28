@@ -1,0 +1,220 @@
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+.root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #faf6ef;
+    overflow: hidden;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 1px solid #e2d5bf;
+    background: #fffaf1;
+    flex-shrink: 0;
+}
+
+.search {
+    flex: 1;
+    max-width: 360px;
+    height: 28px;
+    padding: 0 10px;
+    border: 1px solid #d5c6ad;
+    border-radius: 5px;
+    background: #fff;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #2f2417;
+    outline: none;
+}
+
+.search:focus {
+    border-color: #c5a97b;
+}
+
+.count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #9b8a73;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* ── Card grid ───────────────────────────────────────────────────────────── */
+.grid {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+    align-content: start;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid #e2d5bf;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: box-shadow 0.15s, transform 0.1s;
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    box-shadow: 0 4px 16px #00000014;
+    transform: translateY(-1px);
+}
+
+.cardImg {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #f5efe4;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.noImg {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #c4b49a;
+}
+
+.cardBody {
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.cardStatus {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.statusDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.statusLabel {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: #9b8a73;
+    text-transform: uppercase;
+}
+
+.cardTitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: #2f2417;
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.cardVendor {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #9b8a73;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.cardMeta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #6f5a3f;
+    margin-top: 4px;
+}
+
+.inStock {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.outStock {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.cardVariants {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: #b5a48d;
+    margin-top: 2px;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+.empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.emptyIcon {
+    font-size: 32px;
+    color: #d5c6ad;
+}
+
+.emptyTitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6f5a3f;
+}
+
+.emptySubtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #9b8a73;
+}
+
+
+.addBtn {
+    height: 28px;
+    padding: 0 14px;
+    background: #2f2417;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+}
+
+.addBtn:hover:not(:disabled) {
+    background: #4a3728;
+}
+
+.addBtn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}

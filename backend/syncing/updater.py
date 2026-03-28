@@ -1235,13 +1235,13 @@ def run_delete_phase(df, progress_callback=None):
 # Main updater
 # ------------------------------------------------
 
-def run_updates(csv_path, location_map, progress_callback=None):
+def run_updates(csv_path, location_map, product_id_filter=None, progress_callback=None):
 
     print("\n====================================")
     print("[UPDATE] Shopify Sync Started")
     print("====================================\n")
 
-    df = pd.read_csv(csv_path)
+    df = pd.read_csv(csv_path, dtype=str).fillna('')
 
     if "Sync Status" not in df.columns:
         df["Sync Status"] = ""
@@ -1261,6 +1261,9 @@ def run_updates(csv_path, location_map, progress_callback=None):
     field_schema   = load_field_schema(store_dir)
 
     all_columns = list(df.columns)
+
+    if product_id_filter:
+        df = df[df["Product ID"].astype(str) == str(product_id_filter)].reset_index(drop=True)
 
     print("[SYNC] Rows loaded:", len(df))
     print("[SYNC] Columns detected:", len(all_columns))

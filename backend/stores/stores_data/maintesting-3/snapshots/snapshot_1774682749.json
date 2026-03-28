@@ -1,6 +1,6 @@
 {
-  "timestamp": 1774604400,
-  "products_count": 25,
+  "timestamp": 1774682749,
+  "products_count": 32,
   "data": {
     "gid://shopify/Product/14963748307316": {
       "product": {
@@ -1867,9 +1867,9 @@
         "id": "gid://shopify/Product/14992385278324",
         "handle": "bla-blah",
         "title": "BLA BLAH",
-        "descriptionHtml": "<p>ada</p>",
-        "vendor": "MAINTESTING",
-        "productType": "",
+        "descriptionHtml": "VFVNFVOFV",
+        "vendor": "Snowboard Vendor",
+        "productType": "accessories",
         "productCategory": {
           "productTaxonomyNode": {
             "id": "gid://shopify/ProductTaxonomyNode/9483",
@@ -1877,22 +1877,43 @@
             "fullName": "Uncategorized"
           }
         },
-        "tags": [],
+        "tags": [
+          "fufigf",
+          "fviif",
+          "kvndfuvhf"
+        ],
         "status": "ACTIVE",
         "createdAt": "2026-03-20T05:26:35Z",
-        "updatedAt": "2026-03-20T17:48:48Z",
+        "updatedAt": "2026-03-28T06:33:18Z",
         "seo": {
-          "title": null,
-          "description": null
+          "title": "CDjnvjdfnvnfdoi",
+          "description": "k giofn ofg nofn kfggk ngfi nifgni fhg"
         }
       },
-      "product_metafields": {},
+      "product_metafields": {
+        "custom.main_testing": {
+          "value": "MA",
+          "type": "single_line_text_field"
+        },
+        "custom.testing": {
+          "value": "1",
+          "type": "single_line_text_field"
+        },
+        "global.title_tag": {
+          "value": "CDjnvjdfnvnfdoi",
+          "type": "string"
+        },
+        "global.description_tag": {
+          "value": "k giofn ofg nofn kfggk ngfi nifgni fhg",
+          "type": "string"
+        }
+      },
       "variants": [
         {
           "variant": {
             "id": "gid://shopify/ProductVariant/54139152957812",
             "sku": null,
-            "price": "0.00",
+            "price": "10000.00",
             "compareAtPrice": null,
             "barcode": "",
             "taxCode": "",
@@ -1920,26 +1941,61 @@
           "metafields": {},
           "inventory": {
             "My Custom Location": 0,
-            "Shop location": 0
+            "Shop location": 50
+          }
+        },
+        {
+          "variant": {
+            "id": "gid://shopify/ProductVariant/54198765322612",
+            "sku": null,
+            "price": "100.00",
+            "compareAtPrice": null,
+            "barcode": null,
+            "taxCode": "",
+            "selectedOptions": [
+              {
+                "name": "Size",
+                "value": "S"
+              }
+            ],
+            "inventoryPolicy": "DENY",
+            "inventoryItem": {
+              "id": "gid://shopify/InventoryItem/55061357429108",
+              "tracked": true,
+              "requiresShipping": true,
+              "unitCost": null,
+              "measurement": {
+                "weight": {
+                  "value": 0.0,
+                  "unit": "POUNDS"
+                }
+              }
+            },
+            "__parentId": "gid://shopify/Product/14992385278324"
+          },
+          "metafields": {},
+          "inventory": {
+            "Shop location": 1000,
+            "My Custom Location": 0
           }
         }
       ],
       "images": [],
-      "collection_handles": ""
+      "collection_handles": "hydrogen"
     },
     "gid://shopify/Product/14992572318068": {
       "product": {
         "id": "gid://shopify/Product/14992572318068",
         "handle": "danger",
         "title": "DANGER",
-        "descriptionHtml": "",
+        "descriptionHtml": "DANGER AHEAD",
         "vendor": "MAINTESTING",
         "productType": "",
         "productCategory": null,
         "tags": [],
         "status": "DRAFT",
         "createdAt": "2026-03-20T06:31:03Z",
-        "updatedAt": "2026-03-21T04:46:41Z",
+        "updatedAt": "2026-03-28T05:30:09Z",
         "seo": {
           "title": null,
           "description": null
@@ -1951,7 +2007,7 @@
           "variant": {
             "id": "gid://shopify/ProductVariant/54142022484340",
             "sku": null,
-            "price": "0.00",
+            "price": "10.00",
             "compareAtPrice": null,
             "barcode": null,
             "taxCode": "",
@@ -1978,7 +2034,7 @@
           },
           "metafields": {},
           "inventory": {
-            "Shop location": 0,
+            "Shop location": 10,
             "My Custom Location": 0
           }
         },
@@ -2036,7 +2092,7 @@
         ],
         "status": "DRAFT",
         "createdAt": "2026-03-24T04:46:00Z",
-        "updatedAt": "2026-03-27T06:30:55Z",
+        "updatedAt": "2026-03-27T17:16:26Z",
         "seo": {
           "title": "djfdbgb",
           "description": "gscf d fd"
@@ -2115,7 +2171,7 @@
         "id": "gid://shopify/Product/14998261563764",
         "handle": "adm-awjb-evr",
         "title": "adm awjb evr add",
-        "descriptionHtml": "dadadad",
+        "descriptionHtml": "HELLO",
         "vendor": "MAINTESTING",
         "productType": "",
         "productCategory": null,
@@ -2125,7 +2181,7 @@
         ],
         "status": "ACTIVE",
         "createdAt": "2026-03-24T05:14:30Z",
-        "updatedAt": "2026-03-25T21:52:25Z",
+        "updatedAt": "2026-03-28T03:50:02Z",
         "seo": {
           "title": "a",
           "description": "aa"
@@ -2245,13 +2301,15 @@
         "handle": "hello-world",
         "title": "HELLO WORLD",
         "descriptionHtml": "HELLO WORLD",
-        "vendor": "MAINTESTING",
-        "productType": "",
+        "vendor": "Hydrogen Vendor",
+        "productType": "snowboard",
         "productCategory": null,
-        "tags": [],
-        "status": "DRAFT",
+        "tags": [
+          "vjfgvbgf"
+        ],
+        "status": "ACTIVE",
         "createdAt": "2026-03-27T06:33:34Z",
-        "updatedAt": "2026-03-27T09:23:51Z",
+        "updatedAt": "2026-03-27T19:39:44Z",
         "seo": {
           "title": null,
           "description": null
@@ -2302,6 +2360,509 @@
           "alt": ""
         }
       ],
+      "collection_handles": ""
+    },
+    "gid://shopify/Product/15008159433076": {
+      "product": {
+        "id": "gid://shopify/Product/15008159433076",
+        "handle": "frontend-working",
+        "title": "FRONTEND WORKING",
+        "descriptionHtml": "WORKING",
+        "vendor": "Hydrogen Vendor",
+        "productType": "snowboard",
+        "productCategory": null,
+        "tags": [
+          "cfvugibbng",
+          "fkif",
+          "vibvufb"
+        ],
+        "status": "DRAFT",
+        "createdAt": "2026-03-28T06:52:07Z",
+        "updatedAt": "2026-03-28T06:53:23Z",
+        "seo": {
+          "title": "BJIVIUSFVOFSV",
+          "description": "cjfvnnofpobg"
+        }
+      },
+      "product_metafields": {
+        "global.title_tag": {
+          "value": "BJIVIUSFVOFSV",
+          "type": "string"
+        },
+        "global.description_tag": {
+          "value": "cjfvnnofpobg",
+          "type": "string"
+        },
+        "custom.testing": {
+          "value": "1",
+          "type": "single_line_text_field"
+        }
+      },
+      "variants": [
+        {
+          "variant": {
+            "id": "gid://shopify/ProductVariant/54199998546292",
+            "sku": null,
+            "price": "100.00",
+            "compareAtPrice": null,
+            "barcode": null,
+            "taxCode": "",
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ],
+            "inventoryPolicy": "DENY",
+            "inventoryItem": {
+              "id": "gid://shopify/InventoryItem/55062590652788",
+              "tracked": true,
+              "requiresShipping": true,
+              "unitCost": null,
+              "measurement": {
+                "weight": {
+                  "value": 0.0,
+                  "unit": "POUNDS"
+                }
+              }
+            },
+            "__parentId": "gid://shopify/Product/15008159433076"
+          },
+          "metafields": {},
+          "inventory": {
+            "Shop location": 50,
+            "My Custom Location": 0
+          }
+        }
+      ],
+      "images": [],
+      "collection_handles": "hydrogen"
+    },
+    "gid://shopify/Product/15008160448884": {
+      "product": {
+        "id": "gid://shopify/Product/15008160448884",
+        "handle": "again-checking",
+        "title": "AGAIN CHECKING",
+        "descriptionHtml": "",
+        "vendor": "MAINTESTING",
+        "productType": "",
+        "productCategory": null,
+        "tags": [
+          "fdbgib",
+          "vjfbvg"
+        ],
+        "status": "ACTIVE",
+        "createdAt": "2026-03-28T06:57:32Z",
+        "updatedAt": "2026-03-28T07:24:48Z",
+        "seo": {
+          "title": "vdfnjvnifihobfg",
+          "description": "vvjfbgfobfgjbgf"
+        }
+      },
+      "product_metafields": {
+        "global.title_tag": {
+          "value": "vdfnjvnifihobfg",
+          "type": "string"
+        },
+        "global.description_tag": {
+          "value": "vvjfbgfobfgjbgf",
+          "type": "string"
+        }
+      },
+      "variants": [
+        {
+          "variant": {
+            "id": "gid://shopify/ProductVariant/54200146035060",
+            "sku": null,
+            "price": "100.00",
+            "compareAtPrice": null,
+            "barcode": null,
+            "taxCode": "",
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ],
+            "inventoryPolicy": "DENY",
+            "inventoryItem": {
+              "id": "gid://shopify/InventoryItem/55062738141556",
+              "tracked": false,
+              "requiresShipping": true,
+              "unitCost": null,
+              "measurement": {
+                "weight": {
+                  "value": 0.0,
+                  "unit": "POUNDS"
+                }
+              }
+            },
+            "__parentId": "gid://shopify/Product/15008160448884"
+          },
+          "metafields": {},
+          "inventory": {
+            "Shop location": 0,
+            "My Custom Location": 0
+          }
+        }
+      ],
+      "images": [],
+      "collection_handles": ""
+    },
+    "gid://shopify/Product/15008162185588": {
+      "product": {
+        "id": "gid://shopify/Product/15008162185588",
+        "handle": "checking",
+        "title": "CHECKING",
+        "descriptionHtml": "",
+        "vendor": "MAINTESTING",
+        "productType": "",
+        "productCategory": null,
+        "tags": [
+          "kfndioiofgbjpg",
+          "mfd;npdfdfb"
+        ],
+        "status": "ACTIVE",
+        "createdAt": "2026-03-28T07:01:27Z",
+        "updatedAt": "2026-03-28T07:24:47Z",
+        "seo": {
+          "title": "jfnsuhv",
+          "description": "nbisuhvdfjvdf"
+        }
+      },
+      "product_metafields": {
+        "global.title_tag": {
+          "value": "jfnsuhv",
+          "type": "string"
+        },
+        "global.description_tag": {
+          "value": "nbisuhvdfjvdf",
+          "type": "string"
+        }
+      },
+      "variants": [
+        {
+          "variant": {
+            "id": "gid://shopify/ProductVariant/54200320000372",
+            "sku": null,
+            "price": "100.00",
+            "compareAtPrice": null,
+            "barcode": null,
+            "taxCode": "",
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ],
+            "inventoryPolicy": "DENY",
+            "inventoryItem": {
+              "id": "gid://shopify/InventoryItem/55062912106868",
+              "tracked": false,
+              "requiresShipping": true,
+              "unitCost": null,
+              "measurement": {
+                "weight": {
+                  "value": 0.0,
+                  "unit": "POUNDS"
+                }
+              }
+            },
+            "__parentId": "gid://shopify/Product/15008162185588"
+          },
+          "metafields": {},
+          "inventory": {
+            "Shop location": 0,
+            "My Custom Location": 0
+          }
+        }
+      ],
+      "images": [],
+      "collection_handles": ""
+    },
+    "gid://shopify/Product/15008164020596": {
+      "product": {
+        "id": "gid://shopify/Product/15008164020596",
+        "handle": "fun-game",
+        "title": "FUN GAME",
+        "descriptionHtml": "",
+        "vendor": "MAINTESTING",
+        "productType": "snowboard",
+        "productCategory": null,
+        "tags": [
+          "jvjifnv",
+          "kfdubogib"
+        ],
+        "status": "DRAFT",
+        "createdAt": "2026-03-28T07:04:55Z",
+        "updatedAt": "2026-03-28T07:24:47Z",
+        "seo": {
+          "title": "jfdifdgb",
+          "description": "n igno igpoj fg"
+        }
+      },
+      "product_metafields": {
+        "global.title_tag": {
+          "value": "jfdifdgb",
+          "type": "string"
+        },
+        "global.description_tag": {
+          "value": "n igno igpoj fg",
+          "type": "string"
+        }
+      },
+      "variants": [
+        {
+          "variant": {
+            "id": "gid://shopify/ProductVariant/54200648237428",
+            "sku": null,
+            "price": "1.00",
+            "compareAtPrice": null,
+            "barcode": null,
+            "taxCode": "",
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ],
+            "inventoryPolicy": "DENY",
+            "inventoryItem": {
+              "id": "gid://shopify/InventoryItem/55063240343924",
+              "tracked": false,
+              "requiresShipping": true,
+              "unitCost": null,
+              "measurement": {
+                "weight": {
+                  "value": 0.0,
+                  "unit": "POUNDS"
+                }
+              }
+            },
+            "__parentId": "gid://shopify/Product/15008164020596"
+          },
+          "metafields": {},
+          "inventory": {
+            "Shop location": 0,
+            "My Custom Location": 0
+          }
+        }
+      ],
+      "images": [],
+      "collection_handles": ""
+    },
+    "gid://shopify/Product/15008166805876": {
+      "product": {
+        "id": "gid://shopify/Product/15008166805876",
+        "handle": "gaming",
+        "title": "GAMING",
+        "descriptionHtml": "",
+        "vendor": "MAINTESTING",
+        "productType": "snowboard",
+        "productCategory": null,
+        "tags": [
+          "vdfjvnd",
+          "vknvf"
+        ],
+        "status": "ACTIVE",
+        "createdAt": "2026-03-28T07:12:06Z",
+        "updatedAt": "2026-03-28T07:24:47Z",
+        "seo": {
+          "title": "jfndnvpdfjb",
+          "description": "ngfiobjofpjb"
+        }
+      },
+      "product_metafields": {
+        "global.title_tag": {
+          "value": "jfndnvpdfjb",
+          "type": "string"
+        },
+        "global.description_tag": {
+          "value": "ngfiobjofpjb",
+          "type": "string"
+        }
+      },
+      "variants": [
+        {
+          "variant": {
+            "id": "gid://shopify/ProductVariant/54201254117748",
+            "sku": null,
+            "price": "10.00",
+            "compareAtPrice": null,
+            "barcode": null,
+            "taxCode": "",
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ],
+            "inventoryPolicy": "DENY",
+            "inventoryItem": {
+              "id": "gid://shopify/InventoryItem/55063846257012",
+              "tracked": false,
+              "requiresShipping": true,
+              "unitCost": null,
+              "measurement": {
+                "weight": {
+                  "value": 0.0,
+                  "unit": "POUNDS"
+                }
+              }
+            },
+            "__parentId": "gid://shopify/Product/15008166805876"
+          },
+          "metafields": {},
+          "inventory": {
+            "Shop location": 0,
+            "My Custom Location": 0
+          }
+        }
+      ],
+      "images": [],
+      "collection_handles": ""
+    },
+    "gid://shopify/Product/15008167264628": {
+      "product": {
+        "id": "gid://shopify/Product/15008167264628",
+        "handle": "boom",
+        "title": "BOOM",
+        "descriptionHtml": "",
+        "vendor": "Hydrogen Vendor",
+        "productType": "giftcard",
+        "productCategory": null,
+        "tags": [
+          "bfgb",
+          "jbvdf"
+        ],
+        "status": "ACTIVE",
+        "createdAt": "2026-03-28T07:16:26Z",
+        "updatedAt": "2026-03-28T07:16:37Z",
+        "seo": {
+          "title": "jdgbiubduif",
+          "description": "bjgn;bogfjbofbfpgbb"
+        }
+      },
+      "product_metafields": {
+        "global.title_tag": {
+          "value": "jdgbiubduif",
+          "type": "string"
+        },
+        "global.description_tag": {
+          "value": "bjgn;bogfjbofbfpgbb",
+          "type": "string"
+        },
+        "custom.testing": {
+          "value": "2",
+          "type": "single_line_text_field"
+        }
+      },
+      "variants": [
+        {
+          "variant": {
+            "id": "gid://shopify/ProductVariant/54201352257908",
+            "sku": null,
+            "price": "5.00",
+            "compareAtPrice": null,
+            "barcode": null,
+            "taxCode": "",
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ],
+            "inventoryPolicy": "DENY",
+            "inventoryItem": {
+              "id": "gid://shopify/InventoryItem/55063944397172",
+              "tracked": true,
+              "requiresShipping": true,
+              "unitCost": null,
+              "measurement": {
+                "weight": {
+                  "value": 0.0,
+                  "unit": "POUNDS"
+                }
+              }
+            },
+            "__parentId": "gid://shopify/Product/15008167264628"
+          },
+          "metafields": {},
+          "inventory": {
+            "Shop location": 10,
+            "My Custom Location": 0
+          }
+        }
+      ],
+      "images": [],
+      "collection_handles": "hydrogen"
+    },
+    "gid://shopify/Product/15008169296244": {
+      "product": {
+        "id": "gid://shopify/Product/15008169296244",
+        "handle": "ghoom",
+        "title": "GHOOM",
+        "descriptionHtml": "",
+        "vendor": "MAINTESTING",
+        "productType": "",
+        "productCategory": null,
+        "tags": [],
+        "status": "DRAFT",
+        "createdAt": "2026-03-28T07:24:31Z",
+        "updatedAt": "2026-03-28T07:24:55Z",
+        "seo": {
+          "title": "bvfv",
+          "description": "vf"
+        }
+      },
+      "product_metafields": {
+        "global.title_tag": {
+          "value": "bvfv",
+          "type": "string"
+        },
+        "global.description_tag": {
+          "value": "vf",
+          "type": "string"
+        }
+      },
+      "variants": [
+        {
+          "variant": {
+            "id": "gid://shopify/ProductVariant/54201817563508",
+            "sku": null,
+            "price": "15.00",
+            "compareAtPrice": null,
+            "barcode": null,
+            "taxCode": "",
+            "selectedOptions": [
+              {
+                "name": "Title",
+                "value": "Default Title"
+              }
+            ],
+            "inventoryPolicy": "DENY",
+            "inventoryItem": {
+              "id": "gid://shopify/InventoryItem/55064409702772",
+              "tracked": true,
+              "requiresShipping": true,
+              "unitCost": null,
+              "measurement": {
+                "weight": {
+                  "value": 0.0,
+                  "unit": "POUNDS"
+                }
+              }
+            },
+            "__parentId": "gid://shopify/Product/15008169296244"
+          },
+          "metafields": {},
+          "inventory": {
+            "Shop location": 5,
+            "My Custom Location": 0
+          }
+        }
+      ],
+      "images": [],
       "collection_handles": ""
     }
   }

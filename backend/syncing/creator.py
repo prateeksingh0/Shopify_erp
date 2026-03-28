@@ -265,6 +265,7 @@ def create_product_with_variants(df, indices, location_map, all_columns):
 
     product_input = {
         "title":           title,
+        "handle":          clean_string(first_row.get("Handle")) or None,
         "descriptionHtml": clean_string(first_row.get("Body (HTML)")),
         "vendor":          clean_string(first_row.get("Vendor")),
         "productType":     clean_string(first_row.get("Type")),
