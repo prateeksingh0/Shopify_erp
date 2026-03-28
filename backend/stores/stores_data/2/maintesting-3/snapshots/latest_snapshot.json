@@ -1,5 +1,5 @@
 {
-  "timestamp": 1774728285,
+  "timestamp": 1774733537,
   "products_count": 32,
   "data": {
     "gid://shopify/Product/14963748307316": {
@@ -2748,7 +2748,7 @@
         "tags": [],
         "status": "DRAFT",
         "createdAt": "2026-03-28T07:39:45Z",
-        "updatedAt": "2026-03-28T07:40:56Z",
+        "updatedAt": "2026-03-28T21:32:08Z",
         "seo": {
           "title": null,
           "description": null

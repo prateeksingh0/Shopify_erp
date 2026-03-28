@@ -1,6 +1,6 @@
 {
-  "timestamp": 1774711664,
-  "products_count": 34,
+  "timestamp": 1774733537,
+  "products_count": 32,
   "data": {
     "gid://shopify/Product/14963748307316": {
       "product": {
@@ -1884,7 +1884,7 @@
         ],
         "status": "ACTIVE",
         "createdAt": "2026-03-20T05:26:35Z",
-        "updatedAt": "2026-03-28T06:33:18Z",
+        "updatedAt": "2026-03-28T17:51:24Z",
         "seo": {
           "title": "CDjnvjdfnvnfdoi",
           "description": "k giofn ofg nofn kfggk ngfi nifgni fhg"
@@ -1982,100 +1982,6 @@
       ],
       "images": [],
       "collection_handles": "hydrogen"
-    },
-    "gid://shopify/Product/14992572318068": {
-      "product": {
-        "id": "gid://shopify/Product/14992572318068",
-        "handle": "danger",
-        "title": "DANGER",
-        "descriptionHtml": "DANGER AHEAD",
-        "vendor": "MAINTESTING",
-        "productType": "",
-        "productCategory": null,
-        "tags": [],
-        "status": "DRAFT",
-        "createdAt": "2026-03-20T06:31:03Z",
-        "updatedAt": "2026-03-28T05:30:09Z",
-        "seo": {
-          "title": null,
-          "description": null
-        }
-      },
-      "product_metafields": {},
-      "variants": [
-        {
-          "variant": {
-            "id": "gid://shopify/ProductVariant/54142022484340",
-            "sku": null,
-            "price": "10.00",
-            "compareAtPrice": null,
-            "barcode": null,
-            "taxCode": "",
-            "selectedOptions": [
-              {
-                "name": "Size",
-                "value": "XS"
-              }
-            ],
-            "inventoryPolicy": "DENY",
-            "inventoryItem": {
-              "id": "gid://shopify/InventoryItem/55004515795316",
-              "tracked": true,
-              "requiresShipping": true,
-              "unitCost": null,
-              "measurement": {
-                "weight": {
-                  "value": 0.0,
-                  "unit": "POUNDS"
-                }
-              }
-            },
-            "__parentId": "gid://shopify/Product/14992572318068"
-          },
-          "metafields": {},
-          "inventory": {
-            "Shop location": 10,
-            "My Custom Location": 0
-          }
-        },
-        {
-          "variant": {
-            "id": "gid://shopify/ProductVariant/54142022582644",
-            "sku": null,
-            "price": "0.00",
-            "compareAtPrice": null,
-            "barcode": null,
-            "taxCode": "",
-            "selectedOptions": [
-              {
-                "name": "Size",
-                "value": "S"
-              }
-            ],
-            "inventoryPolicy": "DENY",
-            "inventoryItem": {
-              "id": "gid://shopify/InventoryItem/55004515893620",
-              "tracked": true,
-              "requiresShipping": true,
-              "unitCost": null,
-              "measurement": {
-                "weight": {
-                  "value": 0.0,
-                  "unit": "POUNDS"
-                }
-              }
-            },
-            "__parentId": "gid://shopify/Product/14992572318068"
-          },
-          "metafields": {},
-          "inventory": {
-            "Shop location": 0,
-            "My Custom Location": 0
-          }
-        }
-      ],
-      "images": [],
-      "collection_handles": ""
     },
     "gid://shopify/Product/14998259335540": {
       "product": {
@@ -2181,7 +2087,7 @@
         ],
         "status": "ACTIVE",
         "createdAt": "2026-03-24T05:14:30Z",
-        "updatedAt": "2026-03-28T03:50:02Z",
+        "updatedAt": "2026-03-28T20:03:34Z",
         "seo": {
           "title": "a",
           "description": "aa"
@@ -2210,41 +2116,6 @@
         }
       },
       "variants": [
-        {
-          "variant": {
-            "id": "gid://shopify/ProductVariant/54153169502580",
-            "sku": null,
-            "price": "10.00",
-            "compareAtPrice": null,
-            "barcode": null,
-            "taxCode": "",
-            "selectedOptions": [
-              {
-                "name": "Size",
-                "value": "M"
-              }
-            ],
-            "inventoryPolicy": "DENY",
-            "inventoryItem": {
-              "id": "gid://shopify/InventoryItem/55015701381492",
-              "tracked": true,
-              "requiresShipping": true,
-              "unitCost": null,
-              "measurement": {
-                "weight": {
-                  "value": 0.0,
-                  "unit": "POUNDS"
-                }
-              }
-            },
-            "__parentId": "gid://shopify/Product/14998261563764"
-          },
-          "metafields": {},
-          "inventory": {
-            "Shop location": 5,
-            "My Custom Location": 0
-          }
-        },
         {
           "variant": {
             "id": "gid://shopify/ProductVariant/54158031389044",
@@ -2378,7 +2249,7 @@
         ],
         "status": "DRAFT",
         "createdAt": "2026-03-28T06:52:07Z",
-        "updatedAt": "2026-03-28T06:53:23Z",
+        "updatedAt": "2026-03-28T18:53:26Z",
         "seo": {
           "title": "BJIVIUSFVOFSV",
           "description": "cjfvnnofpobg"
@@ -2877,7 +2748,7 @@
         "tags": [],
         "status": "DRAFT",
         "createdAt": "2026-03-28T07:39:45Z",
-        "updatedAt": "2026-03-28T07:40:56Z",
+        "updatedAt": "2026-03-28T21:32:08Z",
         "seo": {
           "title": null,
           "description": null
@@ -2913,65 +2784,6 @@
               }
             },
             "__parentId": "gid://shopify/Product/15008172867956"
-          },
-          "metafields": {},
-          "inventory": {
-            "Shop location": 0,
-            "My Custom Location": 0
-          }
-        }
-      ],
-      "images": [],
-      "collection_handles": ""
-    },
-    "gid://shopify/Product/15008173490548": {
-      "product": {
-        "id": "gid://shopify/Product/15008173490548",
-        "handle": "h",
-        "title": "HEY",
-        "descriptionHtml": "",
-        "vendor": "MAINTESTING",
-        "productType": "",
-        "productCategory": null,
-        "tags": [],
-        "status": "ACTIVE",
-        "createdAt": "2026-03-28T07:41:15Z",
-        "updatedAt": "2026-03-28T07:41:58Z",
-        "seo": {
-          "title": null,
-          "description": null
-        }
-      },
-      "product_metafields": {},
-      "variants": [
-        {
-          "variant": {
-            "id": "gid://shopify/ProductVariant/54202758070644",
-            "sku": null,
-            "price": "0.00",
-            "compareAtPrice": null,
-            "barcode": null,
-            "taxCode": "",
-            "selectedOptions": [
-              {
-                "name": "Title",
-                "value": "Default Title"
-              }
-            ],
-            "inventoryPolicy": "DENY",
-            "inventoryItem": {
-              "id": "gid://shopify/InventoryItem/55065350275444",
-              "tracked": true,
-              "requiresShipping": true,
-              "unitCost": null,
-              "measurement": {
-                "weight": {
-                  "value": 0.0,
-                  "unit": "POUNDS"
-                }
-              }
-            },
-            "__parentId": "gid://shopify/Product/15008173490548"
           },
           "metafields": {},
           "inventory": {

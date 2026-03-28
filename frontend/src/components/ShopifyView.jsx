@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, memo } from 'react'
 import ProductPanel from './ProductPanel'
 import styles from './ShopifyView.module.css'
 import { getProducts } from '../api'
@@ -11,6 +11,16 @@ const PRODUCT_LEVEL_KEYS = new Set([
     'Product Category ID', 'Product Category Name', 'Product Category Full Path',
     'Collection Names',
 ])
+
+function shopifyThumb(url, size = 'small') {
+    if (!url) return ''
+    if (/_\d+x\d*\.|_small\.|_medium\.|_large\./.test(url)) return url
+    const [base, query] = url.split('?')
+    const dot = base.lastIndexOf('.')
+    if (dot === -1) return url
+    const thumb = base.slice(0, dot) + `_${size}` + base.slice(dot)
+    return query ? `${thumb}?${query}` : thumb
+}
 
 function groupRows(rows) {
     const map = new Map()
@@ -28,7 +38,8 @@ function groupRows(rows) {
 
 function firstImageUrl(row) {
     const raw = String(row?.['Image URLs'] || '')
-    return raw.split(',').map(u => u.trim()).find(u => u.startsWith('http')) || ''
+    const url = raw.split(',').map(u => u.trim()).find(u => u.startsWith('http')) || ''
+    return shopifyThumb(url, 'medium')
 }
 
 function priceRange(variantRows) {
@@ -52,6 +63,46 @@ function totalInventory(variantRows) {
 }
 
 const STATUS_DOT = { active: '#10b981', draft: '#f59e0b', archived: '#94a3b8' }
+
+const ProductCard = memo(function ProductCard({ productRow, variantRows, onClick }) {
+    const imgUrl = firstImageUrl(productRow)
+    const status = String(productRow['Status'] || '').toLowerCase()
+    const dotColor = STATUS_DOT[status] || '#94a3b8'
+    const inv = totalInventory(variantRows)
+
+    return (
+        <div className={styles.card} onClick={onClick}>
+            <div className={styles.cardImg}>
+                {imgUrl
+                    ? <img
+                        src={imgUrl}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        className={styles.cardImgEl}
+                        onError={e => { e.currentTarget.style.display = 'none' }}
+                    />
+                    : <span className={styles.noImg}>No image</span>
+                }
+            </div>
+            <div className={styles.cardBody}>
+                <div className={styles.cardStatus}>
+                    <span className={styles.statusDot} style={{ background: dotColor }} />
+                    <span className={styles.statusLabel}>{status || '—'}</span>
+                </div>
+                <div className={styles.cardTitle}>{productRow['Title'] || '—'}</div>
+                {productRow['Vendor'] && <div className={styles.cardVendor}>{productRow['Vendor']}</div>}
+                <div className={styles.cardMeta}>
+                    <span>{priceRange(variantRows)}</span>
+                    <span className={inv > 0 ? styles.inStock : styles.outStock}>{inv} in stock</span>
+                </div>
+                <div className={styles.cardVariants}>
+                    {variantRows.length} variant{variantRows.length !== 1 ? 's' : ''}
+                </div>
+            </div>
+        </div>
+    )
+})
 
 export default function ShopifyView({
     rows, setRows, selectedStore, isSyncing, setIsSyncing,
@@ -163,33 +214,13 @@ export default function ShopifyView({
             <div className={styles.grid}>
                 {filtered.map(({ productRow, variantRows }) => {
                     const pid = productRow['Product ID'] || productRow['Handle'] || '__unknown__'
-                    const imgUrl = firstImageUrl(productRow)
-                    const status = String(productRow['Status'] || '').toLowerCase()
-                    const dotColor = STATUS_DOT[status] || '#94a3b8'
-                    const inv = totalInventory(variantRows)
                     return (
-                        <div key={pid} className={styles.card}
-                            onClick={() => setOpenProduct({ productRow, variantRows })}>
-                            <div className={styles.cardImg}
-                                style={imgUrl ? { backgroundImage: `url(${imgUrl})` } : {}}>
-                                {!imgUrl && <span className={styles.noImg}>No image</span>}
-                            </div>
-                            <div className={styles.cardBody}>
-                                <div className={styles.cardStatus}>
-                                    <span className={styles.statusDot} style={{ background: dotColor }} />
-                                    <span className={styles.statusLabel}>{status || '—'}</span>
-                                </div>
-                                <div className={styles.cardTitle}>{productRow['Title'] || '—'}</div>
-                                {productRow['Vendor'] && <div className={styles.cardVendor}>{productRow['Vendor']}</div>}
-                                <div className={styles.cardMeta}>
-                                    <span>{priceRange(variantRows)}</span>
-                                    <span className={inv > 0 ? styles.inStock : styles.outStock}>{inv} in stock</span>
-                                </div>
-                                <div className={styles.cardVariants}>
-                                    {variantRows.length} variant{variantRows.length !== 1 ? 's' : ''}
-                                </div>
-                            </div>
-                        </div>
+                        <ProductCard
+                            key={pid}
+                            productRow={productRow}
+                            variantRows={variantRows}
+                            onClick={() => setOpenProduct({ productRow, variantRows })}
+                        />
                     )
                 })}
             </div>

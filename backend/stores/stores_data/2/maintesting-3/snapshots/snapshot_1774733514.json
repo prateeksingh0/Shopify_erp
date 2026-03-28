@@ -1,6 +1,6 @@
 {
-  "timestamp": 1774728235,
-  "products_count": 33,
+  "timestamp": 1774733514,
+  "products_count": 32,
   "data": {
     "gid://shopify/Product/14963748307316": {
       "product": {
@@ -1983,100 +1983,6 @@
       "images": [],
       "collection_handles": "hydrogen"
     },
-    "gid://shopify/Product/14992572318068": {
-      "product": {
-        "id": "gid://shopify/Product/14992572318068",
-        "handle": "danger",
-        "title": "DANGER",
-        "descriptionHtml": "DANGER AHEAD",
-        "vendor": "MAINTESTING",
-        "productType": "",
-        "productCategory": null,
-        "tags": [],
-        "status": "DRAFT",
-        "createdAt": "2026-03-20T06:31:03Z",
-        "updatedAt": "2026-03-28T17:25:10Z",
-        "seo": {
-          "title": null,
-          "description": null
-        }
-      },
-      "product_metafields": {},
-      "variants": [
-        {
-          "variant": {
-            "id": "gid://shopify/ProductVariant/54142022484340",
-            "sku": null,
-            "price": "10.00",
-            "compareAtPrice": null,
-            "barcode": null,
-            "taxCode": "",
-            "selectedOptions": [
-              {
-                "name": "Size",
-                "value": "XS"
-              }
-            ],
-            "inventoryPolicy": "DENY",
-            "inventoryItem": {
-              "id": "gid://shopify/InventoryItem/55004515795316",
-              "tracked": true,
-              "requiresShipping": true,
-              "unitCost": null,
-              "measurement": {
-                "weight": {
-                  "value": 0.0,
-                  "unit": "POUNDS"
-                }
-              }
-            },
-            "__parentId": "gid://shopify/Product/14992572318068"
-          },
-          "metafields": {},
-          "inventory": {
-            "Shop location": 10,
-            "My Custom Location": 0
-          }
-        },
-        {
-          "variant": {
-            "id": "gid://shopify/ProductVariant/54142022582644",
-            "sku": null,
-            "price": "0.00",
-            "compareAtPrice": null,
-            "barcode": null,
-            "taxCode": "",
-            "selectedOptions": [
-              {
-                "name": "Size",
-                "value": "S"
-              }
-            ],
-            "inventoryPolicy": "DENY",
-            "inventoryItem": {
-              "id": "gid://shopify/InventoryItem/55004515893620",
-              "tracked": true,
-              "requiresShipping": true,
-              "unitCost": null,
-              "measurement": {
-                "weight": {
-                  "value": 0.0,
-                  "unit": "POUNDS"
-                }
-              }
-            },
-            "__parentId": "gid://shopify/Product/14992572318068"
-          },
-          "metafields": {},
-          "inventory": {
-            "Shop location": 0,
-            "My Custom Location": 0
-          }
-        }
-      ],
-      "images": [],
-      "collection_handles": ""
-    },
     "gid://shopify/Product/14998259335540": {
       "product": {
         "id": "gid://shopify/Product/14998259335540",
@@ -2834,7 +2740,7 @@
       "product": {
         "id": "gid://shopify/Product/15008172867956",
         "handle": "bl",
-        "title": "BLOOM",
+        "title": "BLOOM b",
         "descriptionHtml": "",
         "vendor": "MAINTESTING",
         "productType": "",
@@ -2842,7 +2748,7 @@
         "tags": [],
         "status": "DRAFT",
         "createdAt": "2026-03-28T07:39:45Z",
-        "updatedAt": "2026-03-28T07:40:56Z",
+        "updatedAt": "2026-03-28T21:31:36Z",
         "seo": {
           "title": null,
           "description": null

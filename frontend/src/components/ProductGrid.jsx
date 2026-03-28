@@ -14,6 +14,19 @@ const STATUS_COLORS = {
     SKIPPED: { bg: '' },
 }
 
+
+function shopifyThumb(url) {
+    if (!url) return ''
+    // Already has size suffix
+    if (/_\d+x\d*\.|_small\.|_medium\.|_large\./.test(url)) return url
+    // Add _small before extension, before query string
+    const [base, query] = url.split('?')
+    const dot = base.lastIndexOf('.')
+    if (dot === -1) return url
+    const thumb = base.slice(0, dot) + '_small' + base.slice(dot)
+    return query ? `${thumb}?${query}` : thumb
+}
+
 // Generic cell validator — driven entirely by the field_schema loaded from the store.
 // No field names, enum values, or limits are hardcoded here.
 function getCellValidationError(key, value, fieldSchema = {}, rowData = null, allowedCollectionHandles = []) {
@@ -86,31 +99,32 @@ function getCellValidationError(key, value, fieldSchema = {}, rowData = null, al
 }
 
 // ── Image preview cell renderer ──────────────────────────────────────────────
+
 function ImagePreviewCell(params) {
     const raw = String(params.data?.['Image URLs'] || '')
-    const urls = raw.split(',').map(u => u.trim()).filter(Boolean)
-    if (!urls.length) return null
+    const originalUrl = raw.split(',').map(u => u.trim()).find(u => u.startsWith('http')) || ''
+    const thumbUrl = shopifyThumb(originalUrl)
+    if (!originalUrl) return null
     return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', height: '100%', overflow: 'hidden' }}>
-            {urls.map((url, i) => (
-                <img
-                    key={i}
-                    src={url}
-                    alt=""
-                    loading="lazy"
-                    style={{
-                        height: '38px',
-                        width: 'auto',
-                        maxWidth: '44px',
-                        objectFit: 'cover',
-                        borderRadius: '3px',
-                        cursor: 'pointer',
-                        flexShrink: 0,
-                    }}
-                    onClick={(e) => { e.stopPropagation(); window.open(url, '_blank') }}
-                    onError={(e) => { e.currentTarget.style.display = 'none' }}
-                />
-            ))}
+        <div style={{ display: 'flex', alignItems: 'center', height: '100%', overflow: 'hidden' }}>
+            <img
+                src={thumbUrl}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                width="44"
+                height="38"
+                style={{
+                    height: '38px',
+                    width: '44px',
+                    objectFit: 'cover',
+                    borderRadius: '3px',
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                }}
+                onClick={(e) => { e.stopPropagation(); window.open(originalUrl, '_blank') }}
+                onError={(e) => { e.currentTarget.style.display = 'none' }}
+            />
         </div>
     )
 }
@@ -263,7 +277,7 @@ export default function ProductGrid({ rows, setRows, syncState, isSyncing, selec
             if (vendor) seen.add(vendor)
         }
         setAllowedVendors(Array.from(seen).sort((a, b) => a.localeCompare(b)))
-    }, [loadKey, rows])
+    }, [loadKey])
 
     useEffect(() => {
         const seen = new Set()
@@ -272,7 +286,7 @@ export default function ProductGrid({ rows, setRows, syncState, isSyncing, selec
             if (status) seen.add(status)
         }
         setAllowedStatuses(Array.from(seen).sort((a, b) => a.localeCompare(b)))
-    }, [loadKey, rows])
+    }, [loadKey])
 
     useEffect(() => {
         const seen = new Set()
@@ -281,7 +295,7 @@ export default function ProductGrid({ rows, setRows, syncState, isSyncing, selec
             if (type) seen.add(type)
         }
         setAllowedTypes(Array.from(seen).sort((a, b) => a.localeCompare(b)))
-    }, [loadKey, rows])
+    }, [loadKey])
 
     useEffect(() => {
         const seen = new Set()
@@ -293,7 +307,7 @@ export default function ProductGrid({ rows, setRows, syncState, isSyncing, selec
             }
         }
         setAllowedCollectionHandles(Array.from(seen).sort((a, b) => a.localeCompare(b)))
-    }, [loadKey, rows])
+    }, [loadKey])
 
     useEffect(() => {
         syncStateRef.current = syncState
@@ -305,7 +319,8 @@ export default function ProductGrid({ rows, setRows, syncState, isSyncing, selec
 
     useEffect(() => {
         if (!gridRef.current?.api) return
-        gridRef.current.api.redrawRows()
+        gridRef.current.api.refreshCells({ force: true })  // for cellClassRules
+        gridRef.current.api.redrawRows()                    // for getRowStyle
     }, [syncState?.results, rollbackChangedIndices])
 
     const columnDefs = useMemo(() => {
@@ -485,7 +500,6 @@ export default function ProductGrid({ rows, setRows, syncState, isSyncing, selec
                 pinned: key === 'Title' ? 'left' : undefined,
                 headerClass: ro ? styles.readOnlyHeader : '',
                 cellStyle: (params) => {
-                    // IMPORTANT: never set background here — getRowStyle owns the row bg
                     const style = {
                         fontFamily: "'IBM Plex Mono', monospace",
                         fontSize: '11px',
@@ -507,12 +521,14 @@ export default function ProductGrid({ rows, setRows, syncState, isSyncing, selec
                         else if (v === 'CONFLICT') { style.color = '#f59e0b'; style.fontWeight = '600' }
                         else if (v === 'SKIPPED') { style.color = '#444' }
                     }
-                    const cellErr = getCellValidationError(key, params.value, fieldSchema, params.data, mergedCollectionHandles)
-                    if (cellErr) {
-                        style.boxShadow = 'inset 0 0 0 2px #ef4444'
-                        style.background = '#fff5f5'
-                    }
                     return style
+                },
+
+                cellClassRules: {
+                    [styles.cellError]: (params) => {
+                        if (ro) return false
+                        return !!getCellValidationError(key, params.value, fieldSchema, params.data, mergedCollectionHandles)
+                    }
                 },
             }
         })
@@ -559,13 +575,17 @@ export default function ProductGrid({ rows, setRows, syncState, isSyncing, selec
         if (rollbackRef.current?.has(params.node.rowIndex)) {
             return { background: '#fff6cc' }
         }
-        // Post-sync: show result status colour
+        // Post-sync: read Sync Status from row data directly
+        const syncStatus = String(params.data?.['Sync Status'] ?? '').trim().toUpperCase()
+        if (syncStatus && STATUS_COLORS[syncStatus]?.bg) {
+            return { background: STATUS_COLORS[syncStatus].bg }
+        }
+        // Fallback: check syncStateRef results (for websocket/per-row updates)
         const results = syncStateRef.current?.results
         if (!results) return {}
         const status = results[params.node.rowIndex]
         if (!status || !STATUS_COLORS[status]?.bg) return {}
-        const c = STATUS_COLORS[status]
-        return { background: c.bg }
+        return { background: STATUS_COLORS[status].bg }
     }, [])
 
     if (!selectedStore) {
@@ -640,10 +660,12 @@ export default function ProductGrid({ rows, setRows, syncState, isSyncing, selec
                         headerCheckbox: false  // No header checkbox
                     }}
                     suppressScrollOnNewData={true}
+                    suppressColumnVirtualisation={false}
                     animateRows={false}
                     rowHeight={44}
                     headerHeight={32}
                     enableBrowserTooltips={true}
+                    rowBuffer={10}
                 />
             </div>
         </div>
