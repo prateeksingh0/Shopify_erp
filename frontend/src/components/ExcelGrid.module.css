@@ -163,3 +163,8 @@
     opacity: 0.3;
     cursor: not-allowed;
 }
+
+.cellError {
+    border: 1.5px solid #ef4444 !important;
+    background-color: #fff5f5 !important;
+}

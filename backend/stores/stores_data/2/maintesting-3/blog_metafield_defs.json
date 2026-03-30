@@ -1,0 +1,10 @@
+{
+  "custom.tesing": {
+    "name": "TESING",
+    "type": "single_line_text_field",
+    "choices": null,
+    "min": null,
+    "max": null,
+    "regex": null
+  }
+}

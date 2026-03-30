@@ -1,5 +1,5 @@
 {
-  "timestamp": 1774857529,
+  "timestamp": 1774856999,
   "articles_count": 3,
   "data": {
     "gid://shopify/Article/1001762521460": {
@@ -31,8 +31,8 @@
         "summary": null,
         "author": "Shopify Admin",
         "tags": "",
-        "status": "published",
-        "publishedAt": "2026-03-30T07:53:29Z",
+        "status": "draft",
+        "publishedAt": null,
         "seo_title": "",
         "seo_desc": "",
         "image_url": "",
@@ -50,8 +50,8 @@
         "summary": "dadada",
         "author": "Shopify Admin",
         "tags": "vfdbjfd, vfdnvklfd",
-        "status": "published",
-        "publishedAt": "2026-03-30T07:52:35Z",
+        "status": "draft",
+        "publishedAt": null,
         "seo_title": "fv",
         "seo_desc": "bhnhn",
         "image_url": "",

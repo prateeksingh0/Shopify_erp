@@ -192,3 +192,26 @@ export async function syncArticles(store) {
 export async function getBlogList(store) {
     return apiFetch(`${BASE}/stores/${store}/blog-list/`)
 }
+
+export async function getBlogMetafieldDefs(store) {
+    return apiFetch(`${BASE}/stores/${store}/blog-metafield-defs/`)
+}
+
+export async function refreshBlogMetafieldDefs(store) {
+    return apiFetch(`${BASE}/stores/${store}/blog-metafield-defs/`, { method: 'POST' })
+}
+
+export async function createBlog(store, payload) {
+    return apiFetch(`${BASE}/stores/${store}/blogs/create-blog/`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+    })
+}
+
+export async function getArticleMetafieldDefs(store) {
+    return apiFetch(`${BASE}/stores/${store}/article-metafield-defs/`)
+}
+
+export async function refreshArticleMetafieldDefs(store) {
+    return apiFetch(`${BASE}/stores/${store}/article-metafield-defs/`, { method: 'POST' })
+}

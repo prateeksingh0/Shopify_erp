@@ -51,6 +51,19 @@ mutation articleDelete($id: ID!) {
 }
 """
 
+ARTICLE_MOVE = """
+mutation articleCreate($article: ArticleCreateInput!) {
+  articleCreate(article: $article) {
+    article {
+      id
+      title
+      blogId
+    }
+    userErrors { field message }
+  }
+}
+"""
+
 
 def normalize(value):
     if value is None:
@@ -106,6 +119,34 @@ def _sync_seo_metafields(article_id, row):
     if errs:
         print(f"[BLOGS SYNC] SEO metafield errors: {errs}")
 
+
+def _sync_article_metafields(article_id, row, store_dir):
+    from blogs.article_metafield_defs import load_article_metafield_defs
+    defs = load_article_metafield_defs(store_dir)
+    if not defs:
+        return
+
+    mf_to_set = []
+    for ns_key, defn in defs.items():
+        value = normalize(row.get(ns_key, ''))
+        if not value or value.lower() in ('nan', 'none'):
+            continue
+        namespace, key = ns_key.split('.', 1)
+        mf_to_set.append({
+            'ownerId':   article_id,
+            'namespace': namespace,
+            'key':       key,
+            'value':     value,
+            'type':      defn.get('type', 'single_line_text_field'),
+        })
+
+    if not mf_to_set:
+        return
+
+    result = graphql_request(ARTICLE_SET_METAFIELD, {'metafields': mf_to_set})
+    errs = ((result.get('data') or {}).get('metafieldsSet') or {}).get('userErrors') or []
+    if errs:
+        print(f"[BLOGS SYNC] Article metafield errors for {article_id}: {errs}")
 
 def run_article_updates(csv_path):
     print("\n[BLOGS SYNC] Starting article sync...\n")
@@ -174,6 +215,7 @@ def run_article_updates(csv_path):
                 df.at[idx, 'Article ID'] = new_id
                 if new_id:
                     _sync_seo_metafields(new_id, row)
+                    _sync_article_metafields(new_id, row, store_dir)
                 df.at[idx, 'Sync Status'] = 'CREATED'
                 created += 1
                 continue
@@ -187,6 +229,41 @@ def run_article_updates(csv_path):
                 skipped += 1
                 continue
 
+            # ── Blog move: delete + recreate in new blog ──────────────────
+            if 'Blog ID' in changes:
+                new_blog_id = normalize(row.get('Blog ID', ''))
+                if not new_blog_id:
+                    new_blog_id = blog_title_to_id.get(normalize(row.get('Blog Title', '')), '')
+                if not new_blog_id:
+                    raise Exception("Cannot move article — new Blog ID could not be resolved")
+
+                # Recreate in new blog FIRST
+                input_data = _build_article_input(row, for_create=True)
+                create_result = graphql_request(ARTICLE_CREATE, {
+                    'article': {**input_data, 'blogId': new_blog_id}
+                })
+                create_errs = ((create_result.get('data') or {}).get('articleCreate') or {}).get('userErrors') or []
+                if create_errs:
+                    raise Exception(f"Recreate before move failed: {create_errs}")
+
+                new_id = ((create_result.get('data') or {}).get('articleCreate') or {}).get('article', {}).get('id', '')
+
+                # Only delete old article if recreate succeeded
+                del_result = graphql_request(ARTICLE_DELETE, {'id': art_id})
+                del_errs = ((del_result.get('data') or {}).get('articleDelete') or {}).get('userErrors') or []
+                if del_errs:
+                    print(f"[BLOGS SYNC] Warning: could not delete old article {art_id}: {del_errs}")
+
+                df.at[idx, 'Article ID'] = new_id
+                if new_id:
+                    _sync_seo_metafields(new_id, row)
+                    _sync_article_metafields(new_id, row, store_dir)
+
+                df.at[idx, 'Sync Status'] = 'UPDATED'
+                updated += 1
+                continue
+
+            # ── Regular update ────────────────────────────────────────────
             input_data = _build_article_input(row, for_create=False)
             result = graphql_request(ARTICLE_UPDATE, {
                 'id':      art_id,
@@ -197,6 +274,7 @@ def run_article_updates(csv_path):
                 raise Exception(f"userErrors: {errs}")
 
             _sync_seo_metafields(art_id, row)
+            _sync_article_metafields(art_id, row, store_dir)
 
             df.at[idx, 'Sync Status'] = 'UPDATED'
             updated += 1
@@ -257,12 +335,12 @@ def _build_article_input(row, for_create=False):
     if image_url:
         input_data['image'] = {'url': image_url, 'altText': image_alt}
 
-    if for_create:
+    # Note: publishedAt is not accepted by ArticleCreateInput in API 2026-01
+    # Status is controlled via isPublished flag instead
+    if not for_create:
         status = normalize(row.get('Status', '')).lower()
-        if status == 'published':
-            input_data['publishedAt'] = datetime.now(timezone.utc).isoformat()
-        elif status == 'draft':
-            input_data['publishedAt'] = None
+        if status in ('published', 'draft'):
+            input_data['isPublished'] = (status == 'published')
 
     return input_data
 
@@ -281,6 +359,7 @@ def _detect_changes(row, snap):
         'image_url': ('Image URL',       lambda v: v),
         'image_alt': ('Image Alt',       lambda v: v),
         'handle':    ('Handle',          lambda v: v),
+        'status':    ('Status',          lambda v: v.lower()),
     }
 
     for snap_key, (row_key, normalizer) in fields.items():
@@ -288,5 +367,24 @@ def _detect_changes(row, snap):
         row_val  = normalizer(normalize(str(row.get(row_key, ''))))
         if snap_val != row_val:
             changes.append(row_key)
+        
+    # Check metafield columns (any key containing a dot that's not a standard field)
+    standard_keys = {v[0] for v in fields.values()}
+    for col_key, row_val_raw in row.items():
+        if '.' not in str(col_key):
+            continue
+        if col_key in standard_keys:
+            continue
+        row_mf_val = normalize(str(row_val_raw))
+        # Snapshot stores metafields nested — check both flat and nested formats
+        snap_mf_val = normalize(str(snap.get(col_key, '')))
+        if row_mf_val != snap_mf_val:
+            changes.append(col_key)
+
+    # Check if blog changed
+    snap_blog_id = normalize(str(snap.get('blog_id', '')))
+    row_blog_id  = normalize(str(row.get('Blog ID', '')))
+    if snap_blog_id and row_blog_id and snap_blog_id != row_blog_id:
+        changes.append('Blog ID')
 
     return changes

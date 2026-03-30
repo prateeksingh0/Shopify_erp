@@ -18,11 +18,14 @@ export default function ExcelGrid({
     rows,
     setRows,
     readOnlyCols = [],
-    dropdownCols = {},   // { colName: ['opt1', 'opt2'] }
+    dropdownCols = {},
     syncState = null,
     isSyncing = false,
     selectedStore = null,
     loadKey = 0,
+    validateCell = null,
+    metafieldDefs = {},
+    linkedCols = {},
 }) {
     const gridRef = useRef(null)
     const syncStateRef = useRef(syncState)
@@ -48,11 +51,23 @@ export default function ExcelGrid({
     const onCellValueChanged = useCallback((params) => {
         setRows(prev => {
             const next = [...prev]
-            next[params.node.rowIndex] = { ...params.data }
+            const updated = { ...params.data }
+
+            // Apply cascading linked column updates
+            if (linkedCols[params.column.colId]) {
+                const newVal = params.newValue
+                const linked = linkedCols[params.column.colId]
+                const match = linked.find(opt => opt.value === newVal)
+                if (match) {
+                    Object.entries(match.set).forEach(([k, v]) => { updated[k] = v })
+                }
+            }
+
+            next[params.node.rowIndex] = updated
             return next
         })
-        params.api.refreshCells({ rowNodes: [params.node], columns: [params.column], force: true })
-    }, [setRows])
+        params.api.refreshCells({ rowNodes: [params.node], force: true })
+    }, [setRows, linkedCols])
 
     const getRowStyle = useCallback((params) => {
         const deleteVal = String(params.data?.['Delete'] ?? '').trim().toUpperCase()
@@ -95,9 +110,14 @@ export default function ExcelGrid({
             const isDelete = key === 'Delete'
             const isSync = key === 'Sync Status'
             const dropdown = dropdownCols[key] || null
+            const defn = metafieldDefs[key]
+            const metafieldTooltip = defn
+                ? `${defn.name} · ${defn.type}${defn.choices ? ` · choices: ${defn.choices.join(', ')}` : ''}${defn.max ? ` · max: ${defn.max}` : ''}`
+                : undefined
 
             return {
                 headerName: key,
+                headerTooltip: metafieldTooltip,
                 colId: key,
                 valueGetter: (p) => p.data?.[key] ?? '',
                 valueSetter: (p) => { p.data[key] = p.newValue; return true },
@@ -132,6 +152,19 @@ export default function ExcelGrid({
                     }
                     return style
                 },
+                ...(validateCell ? {
+                    tooltipValueGetter: (params) => {
+                        if (ro) return undefined
+                        const err = validateCell(key, params.value, params.data)
+                        return err ? `⚠ ${err}` : undefined
+                    },
+                    cellClassRules: {
+                        [styles.cellError]: (params) => {
+                            if (ro) return false
+                            return !!validateCell(key, params.value, params.data)
+                        }
+                    },
+                } : {}),
             }
         })
 
