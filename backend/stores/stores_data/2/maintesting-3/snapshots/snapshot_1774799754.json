@@ -1,5 +1,5 @@
 {
-  "timestamp": 1774733227,
+  "timestamp": 1774799754,
   "products_count": 32,
   "data": {
     "gid://shopify/Product/14963748307316": {
@@ -2740,7 +2740,7 @@
       "product": {
         "id": "gid://shopify/Product/15008172867956",
         "handle": "bl",
-        "title": "BLOOM b",
+        "title": "BLOOM",
         "descriptionHtml": "",
         "vendor": "MAINTESTING",
         "productType": "",
@@ -2748,7 +2748,7 @@
         "tags": [],
         "status": "DRAFT",
         "createdAt": "2026-03-28T07:39:45Z",
-        "updatedAt": "2026-03-28T21:24:22Z",
+        "updatedAt": "2026-03-29T09:12:50Z",
         "seo": {
           "title": null,
           "description": null

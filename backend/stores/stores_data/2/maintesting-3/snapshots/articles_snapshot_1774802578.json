@@ -1,0 +1,42 @@
+{
+  "timestamp": 1774802578,
+  "articles_count": 2,
+  "data": {
+    "gid://shopify/Article/1001368945012": {
+      "article": {
+        "id": "gid://shopify/Article/1001368945012",
+        "blog_id": "gid://shopify/Blog/122470531444",
+        "title": "TESTING",
+        "handle": "jfawbjfpaebf",
+        "body": "TEST",
+        "summary": "hvbudv",
+        "author": "Shopify Admin",
+        "tags": "hvfdbuvbd, sbuvr",
+        "status": "published",
+        "publishedAt": "2026-03-23T06:30:33Z",
+        "seo_title": "kfdnungb",
+        "seo_desc": "vktibnbbirtb",
+        "image_url": "",
+        "image_alt": ""
+      }
+    },
+    "gid://shopify/Article/1001741648244": {
+      "article": {
+        "id": "gid://shopify/Article/1001741648244",
+        "blog_id": "gid://shopify/Blog/122470531444",
+        "title": "HELLO ME",
+        "handle": "he",
+        "body": "vfdjvblufdiufdb",
+        "summary": "fn jf vkjfdi",
+        "author": "Shopify Admin",
+        "tags": "jsbvsv, vffdvh",
+        "status": "published",
+        "publishedAt": "2026-03-29T16:39:43Z",
+        "seo_title": "vhfdvfd",
+        "seo_desc": "bgfbulfbgifg",
+        "image_url": "https://cdn.shopify.com/s/files/1/0981/7092/9524/articles/DSC_5903_b42b773c-4332-4a15-bb40-e400692f4fc2.jpg?v=1774802579",
+        "image_alt": "saas"
+      }
+    }
+  }
+}

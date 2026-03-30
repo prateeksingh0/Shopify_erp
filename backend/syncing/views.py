@@ -14,7 +14,7 @@ from products.store_paths import initialize_store_paths
 from products.locations import fetch_locations
 from syncing.updater import run_updates
 from syncing.models import SyncLog
-
+from stores.token_manager import with_auto_refresh
 
 def get_store_or_404(store_name, user):
     try:
@@ -48,7 +48,11 @@ class SyncView(APIView):
             configure_shopify(store.domain, store.access_token, user_id=request.user.id)
             initialize_store_paths()
             _, location_map = fetch_locations()
-            result = run_updates(csv_path, location_map)
+            result = with_auto_refresh(
+                store,
+                lambda token: configure_shopify(store.domain, token, user_id=request.user.id),
+                lambda: run_updates(csv_path, location_map)
+            )
         except Exception as e:
             duration = int(time.time() - start)
             SyncLog.objects.create(store=store, duration_seconds=duration, status='error')
@@ -126,7 +130,7 @@ class SyncProductView(APIView):
 
         # ── Step 2: Run sync filtered to this product only ─────────────────
         try:
-            configure_shopify(store.domain, store.access_token)
+            configure_shopify(store.domain, store.access_token,user_id=request.user.id)
             initialize_store_paths()
             _, location_map = fetch_locations()
 
@@ -149,12 +153,20 @@ class SyncProductView(APIView):
                 df_reload.to_csv(tmp_path, index=False)
 
                 try:
-                    result = run_updates(tmp_path, location_map, product_id_filter=None)
+                    result = with_auto_refresh(
+                        store,
+                        lambda token: configure_shopify(store.domain, token, user_id=request.user.id),
+                        lambda: run_updates(tmp_path, location_map, product_id_filter=None)
+                    )
                 finally:
                     if os.path.exists(tmp_path):
                         os.remove(tmp_path)
             else:
-                result = run_updates(csv_path, location_map, product_id_filter=product_id)
+                result = with_auto_refresh(
+                    store,
+                    lambda token: configure_shopify(store.domain, token, user_id=request.user.id),
+                    lambda: run_updates(csv_path, location_map, product_id_filter=product_id)
+                )
 
             return Response(result)
         except Exception as e:

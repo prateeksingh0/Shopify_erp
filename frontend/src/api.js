@@ -167,3 +167,28 @@ export async function deleteStore(storeName) {
 export async function clearStoreData(storeName) {
     return apiFetch(`${BASE}/stores/${storeName}/clear-data/`, { method: 'POST' })
 }
+
+// ── Blogs ─────────────────────────────────────────────────────────────────
+
+export async function fetchArticles(store) {
+    return apiFetch(`${BASE}/stores/${store}/blogs/fetch/`, { method: 'POST' })
+}
+
+export async function getArticles(store) {
+    return apiFetch(`${BASE}/stores/${store}/blogs/`)
+}
+
+export async function saveArticles(store, rows) {
+    return apiFetch(`${BASE}/stores/${store}/blogs/save/`, {
+        method: 'POST',
+        body: JSON.stringify({ rows }),
+    })
+}
+
+export async function syncArticles(store) {
+    return apiFetch(`${BASE}/stores/${store}/blogs/sync/`, { method: 'POST' })
+}
+
+export async function getBlogList(store) {
+    return apiFetch(`${BASE}/stores/${store}/blog-list/`)
+}

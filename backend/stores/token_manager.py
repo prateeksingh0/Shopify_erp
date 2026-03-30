@@ -13,6 +13,25 @@ SHOPIFY_SCOPES = ",".join([
 ])
 
 
+def with_auto_refresh(store, configure_fn, action_fn):
+    """
+    Run action_fn. On 401 or auth failure, refresh token and retry once.
+    configure_fn(new_token) must reconfigure Shopify with the new token.
+    """
+    try:
+        return action_fn()
+    except Exception as e:
+        err = str(e).lower()
+        if '401' in err or 'unauthorized' in err or 'request failed after retries' in err:
+            print(f"[TOKEN] Auth failure detected — refreshing token for {store.store_name}")
+            try:
+                new_token = refresh_token_if_needed(store)
+                configure_fn(new_token)
+                return action_fn()
+            except Exception as e2:
+                raise Exception(f"[TOKEN] Retry after refresh also failed: {e2}")
+        raise
+
 def generate_access_token(domain, client_id, client_secret):
     """
     Exchange client credentials for a Shopify access token.

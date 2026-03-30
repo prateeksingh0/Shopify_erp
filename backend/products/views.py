@@ -12,8 +12,8 @@ from stores.models import Store
 from products.config import configure_shopify
 from products.store_paths import initialize_store_paths
 from products.fetch import main as run_fetch
-import products.store_paths as store_paths
 from syncing.models import SyncLog
+from stores.token_manager import with_auto_refresh
 
 
 def get_store_or_404(store_name, user):
@@ -38,7 +38,11 @@ class FetchProductsView(APIView):
         try:
             configure_shopify(store.domain, store.access_token,user_id=request.user.id)
             initialize_store_paths()
-            run_fetch()
+            with_auto_refresh(
+                store,
+                lambda token: configure_shopify(store.domain, token, user_id=request.user.id),
+                lambda: run_fetch()
+            )
         except Exception as e:
             duration = int(time.time() - start)
             SyncLog.objects.create(

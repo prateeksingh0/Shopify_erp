@@ -25,4 +25,5 @@ urlpatterns = [
     path("api/stores/", include('products.urls')),
     path("api/stores/", include('syncing.urls')),
     path("api/stores/", include('snapshots.urls')),
+    path('api/stores/', include('blogs.urls')),
 ]

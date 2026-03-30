@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'products',
     'syncing',
     'snapshots',
+    'blogs',
 ]
 
 CORS_ALLOWED_ORIGINS = [
