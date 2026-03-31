@@ -5,6 +5,7 @@ import pandas as pd
 
 from products.client import graphql_request
 import products.store_paths as store_paths
+import json as __json
 
 # ── Mutations ────────────────────────────────────────────────────────────────
 
@@ -132,12 +133,19 @@ def _sync_article_metafields(article_id, row, store_dir):
         if not value or value.lower() in ('nan', 'none'):
             continue
         namespace, key = ns_key.split('.', 1)
+        mf_type = defn.get('type', 'single_line_text_field')
+
+        # Serialize list types as JSON array
+        if mf_type.startswith('list.'):
+            items = [v.strip() for v in value.split(',') if v.strip()]
+            value =json.dumps(items)
+
         mf_to_set.append({
             'ownerId':   article_id,
             'namespace': namespace,
             'key':       key,
             'value':     value,
-            'type':      defn.get('type', 'single_line_text_field'),
+            'type':      mf_type,
         })
 
     if not mf_to_set:

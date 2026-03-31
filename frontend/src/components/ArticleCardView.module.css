@@ -110,3 +110,25 @@
     margin-top: 4px;
     font-family: 'IBM Plex Mono', monospace;
 }
+
+.cardDelete {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #fff;
+    border: 1px solid #e5e0d8;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+    color: #ef4444;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.card:hover .cardDelete {
+    display: flex;
+}

@@ -42,3 +42,49 @@
 .label {
     flex: 1;
 }
+.groupItem {
+    width: 100%;
+    background: none;
+    border: none;
+    border-left: 2px solid transparent;
+    cursor: pointer;
+    text-align: left;
+}
+
+.chevron {
+    font-size: 9px;
+    color: #9b8a73;
+}
+
+.subItems {
+    display: flex;
+    flex-direction: column;
+    background: #f5efe4;
+    border-left: 2px solid #c27a1a22;
+    margin-left: 0;
+}
+
+.subItem {
+    display: flex;
+    align-items: center;
+    padding: 7px 16px 7px 40px;
+    color: #8b7a62;
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    font-family: 'IBM Plex Mono', monospace;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+}
+
+.subItem:hover {
+    background: #fff3dc55;
+    color: #6f5a3f;
+}
+
+.subItemActive {
+    color: #8f4f00;
+    background: #fff3dc;
+    border-left-color: #c27a1a;
+}

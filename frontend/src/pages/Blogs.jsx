@@ -1,9 +1,10 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useOutletContext } from 'react-router-dom'
-import { fetchArticles, getArticles, saveArticles, syncArticles, getBlogList, getBlogMetafieldDefs, refreshBlogMetafieldDefs, createBlog, getArticleMetafieldDefs } from '../api'
+import { fetchArticles, getArticles, saveArticles, syncArticles, getBlogList, getBlogMetafieldDefs, refreshBlogMetafieldDefs, createBlog, getArticleMetafieldDefs, syncArticle } from '../api'
 import ExcelGrid from '../components/ExcelGrid'
 import ArticleCardView from '../components/ArticleCardView'
 import styles from './Blogs.module.css'
+import SyncProgress from '../components/SyncProgress'
 
 function parseCSVLine(line) {
     const result = []
@@ -36,34 +37,31 @@ export default function Blogs() {
     const [openArticle, setOpenArticle] = useState(null)
     const [blogMetafieldDefs, setBlogMetafieldDefs] = useState({})
     const [articleMetafieldDefs, setArticleMetafieldDefs] = useState({})
-    const [showNewBlog, setShowNewBlog] = useState(false)
+    const [syncState, setSyncState] = useState(null)
 
     useEffect(() => {
         if (!selectedStore?.store_name) { setRows([]); setBlogs([]); return }
         let cancelled = false
-        getArticles(selectedStore.store_name)
-            .then(data => {
-                if (cancelled) return
-                setRows(Array.isArray(data) ? data : [])
-                setMsg(data.length ? `${data.length} articles loaded` : '')
-            })
-            .catch(() => { })
-        getBlogList(selectedStore.store_name)
-            .then(data => { if (!cancelled) setBlogs(data.blogs || []) })
-            .catch(() => { })
 
-        getBlogMetafieldDefs(selectedStore.store_name)
-            .then(defs => { if (!cancelled) setBlogMetafieldDefs(defs) })
-            .catch(() => { })
-        getArticleMetafieldDefs(selectedStore.store_name)
-            .then(defs => { if (!cancelled) setArticleMetafieldDefs(defs) })
-            .catch(() => { })
+        Promise.all([
+            getArticles(selectedStore.store_name),
+            getBlogList(selectedStore.store_name),
+            getBlogMetafieldDefs(selectedStore.store_name),
+            getArticleMetafieldDefs(selectedStore.store_name),
+        ]).then(([articles, blogData, blogDefs, articleDefs]) => {
+            if (cancelled) return
+            setArticleMetafieldDefs(articleDefs)
+            setBlogMetafieldDefs(blogDefs)
+            setBlogs(blogData.blogs || [])
+            setRows(Array.isArray(articles) ? articles : [])
+            setMsg(articles.length ? `${articles.length} articles loaded` : '')
+        }).catch(() => { })
 
         return () => { cancelled = true }
-
     }, [selectedStore?.store_name])
 
     const handleFetch = useCallback(async () => {
+        setSyncState(null)
         if (!selectedStore || isFetching) return
         setIsFetching(true)
         setMsg('Fetching articles...')
@@ -83,6 +81,7 @@ export default function Blogs() {
     }, [selectedStore, isFetching])
 
     const handleRefresh = useCallback(async () => {
+        setSyncState(null)
         if (!selectedStore) return
         try {
             const data = await getArticles(selectedStore.store_name)
@@ -97,7 +96,9 @@ export default function Blogs() {
     const handleSync = useCallback(async () => {
         if (!selectedStore || isSyncing || rows.length === 0) return
         setIsSyncing(true)
+        setSyncState(null)
         setMsg('Saving...')
+        const startTime = Date.now()
         try {
             await saveArticles(selectedStore.store_name, rows)
         } catch {
@@ -108,9 +109,9 @@ export default function Blogs() {
         setMsg('Syncing...')
         try {
             const result = await syncArticles(selectedStore.store_name)
-            setMsg(`Done — ${result.updated} updated, ${result.skipped} skipped, ${result.errors} errors`)
-            const fresh = await getArticles(selectedStore.store_name)
-            setRows(Array.isArray(fresh) ? fresh : [])
+            const duration_seconds = Math.round((Date.now() - startTime) / 1000)
+            setSyncState({ results: {}, summary: { done: true, ...result, duration_seconds } })
+            setMsg('')
         } catch (e) {
             setMsg('Sync failed — check console')
             console.error(e)
@@ -334,14 +335,11 @@ export default function Blogs() {
                     <input type="file" accept=".csv,.xlsx,.xls" style={{ display: 'none' }} onChange={handleImport} />
                 </label>
 
-                <div className={styles.divider} />
-                <button className={styles.btn} onClick={() => setShowNewBlog(true)}
-                    disabled={!selectedStore || isSyncing}>
-                    + NEW BLOG
-                </button>
-
                 <div className={styles.spacer} />
+
+
                 {msg && <span className={styles.statusMsg}>{msg}</span>}
+
                 {rows.length > 0 && (
                     <div className={styles.rowCount}>
                         <span className={styles.rowCountNum}>{rows.length}</span>
@@ -349,6 +347,8 @@ export default function Blogs() {
                     </div>
                 )}
             </div>
+
+            <SyncProgress syncState={syncState} totalRows={rows.length} />
 
             {/* Sub-toolbar */}
             {rows.length > 0 && (
@@ -387,6 +387,12 @@ export default function Blogs() {
                             'Delete': ['', 'YES'],
                             'Blog Title': ['', ...blogs.map(b => b['Blog Title'])],
                             'Author': authorOptions,
+                            // Dynamically add choice metafields
+                            ...Object.fromEntries(
+                                Object.entries(articleMetafieldDefs)
+                                    .filter(([, defn]) => defn.choices && defn.choices.length && !defn.type.startsWith('list.'))
+                                    .map(([ns_key, defn]) => [ns_key, ['', ...defn.choices]])
+                            ),
                         }}
                         isSyncing={isSyncing}
                         selectedStore={selectedStore}
@@ -412,57 +418,78 @@ export default function Blogs() {
                     blogs={blogs}
                     authorOptions={authorOptions}
                     articleMetafieldDefs={articleMetafieldDefs}
+                    selectedStore={selectedStore}
                     onClose={() => setOpenArticle(null)}
-                    onSave={(updated) => {
+                    onSave={(savedRow) => {
                         setRows(prev => {
-                            const id = updated['Article ID']
-                            if (!id) return [...prev, updated]
+                            const id = savedRow['Article ID']
+                            if (!id) return [...prev, savedRow]
                             const idx = prev.findIndex(r => r['Article ID'] === id)
-                            if (idx === -1) return [...prev, updated]
+                            if (idx === -1) return [...prev, savedRow]
                             const next = [...prev]
-                            next[idx] = updated
+                            next[idx] = savedRow
                             return next
                         })
-                        setOpenArticle(null)
                     }}
-                />
-            )}
-            {showNewBlog && (
-                <NewBlogModal
-                    store={selectedStore}
-                    metafieldDefs={blogMetafieldDefs}
-                    onClose={() => setShowNewBlog(false)}
-                    onCreated={(newBlog) => {
-                        setShowNewBlog(false)
-                        setMsg(`Blog "${newBlog.title}" created — click FETCH to reload`)
+                    onDelete={(articleId) => {
+                        setRows(prev => prev.filter(r => r['Article ID'] !== articleId))
                     }}
-                    onRefreshDefs={() =>
-                        refreshBlogMetafieldDefs(selectedStore.store_name)
-                            .then(setBlogMetafieldDefs)
-                            .catch(() => { })
-                    }
                 />
             )}
         </div>
     )
 }
 
-function ArticleModal({ article, blogs, authorOptions = [], articleMetafieldDefs = {}, onClose, onSave }) {
+function ArticleModal({ article, blogs, authorOptions = [], articleMetafieldDefs = {}, onClose, onSave, onDelete, selectedStore }) {
     const [form, setForm] = useState({ ...article })
+    const [syncing, setSyncing] = useState(false)
+    const [syncMsg, setSyncMsg] = useState('')
     const set = (key, val) => setForm(prev => ({ ...prev, [key]: val }))
 
-    // Core fields to always show — order matters, nothing hardcoded beyond structure
-    const READ_ONLY_IN_MODAL = new Set(['Article ID', 'Blog ID', 'Blog Handle', 'Published At', 'Created At', 'Updated At', 'Sync Status', 'Delete'])
+    const READ_ONLY_IN_MODAL = new Set(['Article ID', 'Blog ID', 'Blog Handle', 'Published At', 'Created At', 'Updated At', 'Sync Status'])
     const TEXTAREA_FIELDS = new Set(['Body (HTML)', 'Summary (HTML)'])
     const SKIP_IN_MODAL = new Set(['Article ID', 'Blog ID', 'Blog Handle', 'Blog Title', 'Published At', 'Created At', 'Updated At', 'Sync Status', 'Delete', 'Status', 'Author'])
 
-    // All keys from the article row that are not metafields and not skipped
     const coreKeys = Object.keys(form).filter(k =>
         !SKIP_IN_MODAL.has(k) && !Object.keys(articleMetafieldDefs).includes(k)
     )
-
-    // Metafield keys present in this row
     const metaKeys = Object.keys(articleMetafieldDefs)
+
+    async function handleSync() {
+        if (!selectedStore) return
+        setSyncing(true)
+        setSyncMsg('')
+        try {
+            const articleId = form['Article ID'] || '__new__'
+            const result = await syncArticle(selectedStore.store_name, articleId, form)
+            const savedRow = result.row || { ...form, 'Article ID': result.article_id, 'Sync Status': result.status }
+            setSyncMsg(result.status)
+            setForm(savedRow)        
+            onSave(savedRow)
+        } catch (e) {
+            setSyncMsg('ERROR')
+            console.error(e)
+        } finally {
+            setSyncing(false)
+        }
+    }
+
+    async function handleDelete() {
+        if (!form['Article ID']) return
+        if (!confirm(`Delete "${form['Title']}"? This cannot be undone.`)) return
+        setSyncing(true)
+        setSyncMsg('')
+        try {
+            await syncArticle(selectedStore.store_name, form['Article ID'], { ...form, 'Delete': 'YES' })
+            if (onDelete) onDelete(form['Article ID'])
+            onClose()
+        } catch (e) {
+            setSyncMsg('ERROR')
+            console.error(e)
+        } finally {
+            setSyncing(false)
+        }
+    }
 
     return (
         <div className={styles.modalOverlay} onClick={onClose}>
@@ -525,15 +552,6 @@ function ArticleModal({ article, blogs, authorOptions = [], articleMetafieldDefs
                         </div>
                     ))}
 
-                    {/* Delete */}
-                    <div className={styles.modalField}>
-                        <label>Delete</label>
-                        <select value={form['Delete'] || ''} onChange={e => set('Delete', e.target.value)}>
-                            <option value="">—</option>
-                            <option value="YES">YES</option>
-                        </select>
-                    </div>
-
                     {/* Metafields — fully dynamic */}
                     {metaKeys.length > 0 && (
                         <div style={{ borderTop: '1px solid #eee', margin: '12px 0', paddingTop: 12 }}>
@@ -555,8 +573,27 @@ function ArticleModal({ article, blogs, authorOptions = [], articleMetafieldDefs
                 </div>
 
                 <div className={styles.modalFooter}>
-                    <button className={styles.cancelBtn} onClick={onClose}>CANCEL</button>
-                    <button className={styles.saveBtn} onClick={() => onSave(form)}>SAVE TO GRID</button>
+                    {form['Article ID'] && (
+                        <button className={styles.cancelBtn}
+                            onClick={handleDelete}
+                            disabled={syncing}
+                            style={{ color: '#ef4444', borderColor: '#ef444433' }}>
+                            {syncing ? '...' : '🗑 DELETE'}
+                        </button>
+                    )}
+                    <div style={{ flex: 1 }} />
+                    {syncMsg && (
+                        <span style={{
+                            fontSize: 11, fontWeight: 600,
+                            color: syncMsg === 'ERROR' ? '#ef4444' : syncMsg === 'SKIPPED' ? '#888' : '#10b981'
+                        }}>
+                            {syncMsg}
+                        </span>
+                    )}
+                    <button className={styles.cancelBtn} onClick={onClose} disabled={syncing}>CANCEL</button>
+                    <button className={styles.saveBtn} onClick={handleSync} disabled={syncing}>
+                        {syncing ? 'SYNCING...' : '⇅ SYNC'}
+                    </button>
                 </div>
             </div>
         </div>
@@ -564,7 +601,7 @@ function ArticleModal({ article, blogs, authorOptions = [], articleMetafieldDefs
 }
 
 
-function NewBlogModal({ store, metafieldDefs, onClose, onCreated, onRefreshDefs }) {
+export function NewBlogModal({ store, metafieldDefs, onClose, onCreated }) {
     const [form, setForm] = useState({
         title: '', handle: '', comment_policy: 'CLOSED',
         seo_title: '', seo_description: '',
@@ -573,18 +610,19 @@ function NewBlogModal({ store, metafieldDefs, onClose, onCreated, onRefreshDefs 
     const [errors, setErrors] = useState({})
     const [metaErrors, setMetaErrors] = useState({})
     const [saving, setSaving] = useState(false)
-    const [refreshing, setRefreshing] = useState(false)
     
 
+    const [handleEdited, setHandleEdited] = useState(false)
+
     const set = (key, val) => {
-        setForm(prev => ({ ...prev, [key]: val }))
-        // Auto-generate handle from title
-        if (key === 'title') {
+        if (key === 'title' && !handleEdited) {
             setForm(prev => ({
                 ...prev,
                 title: val,
                 handle: val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
             }))
+        } else {
+            setForm(prev => ({ ...prev, [key]: val }))
         }
         setErrors(prev => ({ ...prev, [key]: null }))
     }
@@ -619,12 +657,6 @@ function NewBlogModal({ store, metafieldDefs, onClose, onCreated, onRefreshDefs 
         } finally {
             setSaving(false)
         }
-    }
-
-    async function handleRefreshDefs() {
-        setRefreshing(true)
-        await onRefreshDefs()
-        setRefreshing(false)
     }
 
     function validateFrontend() {
@@ -680,9 +712,14 @@ function NewBlogModal({ store, metafieldDefs, onClose, onCreated, onRefreshDefs 
 
                     {/* Handle — read only, auto-generated */}
                     <div className={styles.modalField}>
-                        <label style={{ color: '#888' }}>Handle (auto-generated)</label>
-                        <input value={form.handle} readOnly
-                            style={{ color: '#888', background: '#f5f5f5', cursor: 'not-allowed' }} />
+                        <label>Handle</label>
+                        <input value={form.handle}
+                            onChange={e => {
+                                setHandleEdited(true)
+                                set('handle', e.target.value)
+                            }}
+                            placeholder="auto-generated from title"
+                            style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12 }} />
                     </div>
 
                     {/* Comment policy */}
@@ -721,17 +758,7 @@ function NewBlogModal({ store, metafieldDefs, onClose, onCreated, onRefreshDefs 
                             <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', color: '#555' }}>
                                 METAFIELDS {hasDefs ? `(${Object.keys(metafieldDefs).length})` : ''}
                             </div>
-                            <button className={styles.btn} onClick={handleRefreshDefs} disabled={refreshing}
-                                style={{ fontSize: 10, padding: '2px 8px' }}>
-                                {refreshing ? '...' : '↻ Refresh'}
-                            </button>
                         </div>
-
-                        {!hasDefs && (
-                            <div style={{ fontSize: 12, color: '#888' }}>
-                                No blog metafield definitions found. Click ↻ Refresh to fetch from Shopify.
-                            </div>
-                        )}
 
                         {Object.entries(metafieldDefs).map(([ns_key, defn]) => (
                             <MetafieldInput

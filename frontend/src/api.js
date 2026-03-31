@@ -215,3 +215,33 @@ export async function getArticleMetafieldDefs(store) {
 export async function refreshArticleMetafieldDefs(store) {
     return apiFetch(`${BASE}/stores/${store}/article-metafield-defs/`, { method: 'POST' })
 }
+
+export async function syncArticle(store, articleId, articleRow) {
+    return apiFetch(`${BASE}/stores/${store}/blogs/sync/article/`, {
+        method: 'POST',
+        body: JSON.stringify({ articleId, articleRow }),
+    })
+}
+
+export async function getBlogDetail(store, blogId) {
+    return apiFetch(`${BASE}/stores/${store}/blogs/detail/?blog_id=${encodeURIComponent(blogId)}`)
+}
+
+export async function updateBlog(store, blogId, payload) {
+    return apiFetch(`${BASE}/stores/${store}/blogs/detail/`, {
+        method: 'POST',
+        body: JSON.stringify({ blog_id: blogId, ...payload }),
+    })
+}
+
+
+export async function deleteBlog(store, blogId) {
+    return apiFetch(`${BASE}/stores/${store}/blogs/delete/`, {
+        method: 'POST',
+        body: JSON.stringify({ blog_id: blogId }),
+    })
+}
+
+export async function fetchBlogList(store) {
+    return apiFetch(`${BASE}/stores/${store}/blogs/fetch-blog-list/`, { method: 'POST' })
+}

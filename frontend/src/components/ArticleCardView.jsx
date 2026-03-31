@@ -39,7 +39,6 @@ export default function ArticleCardView({ rows, onCardClick }) {
     if (!rows.length) return (
         <div className={styles.empty}>No articles to display</div>
     )
-
     return (
         <div className={styles.grid}>
             {rows.map((row, i) => (

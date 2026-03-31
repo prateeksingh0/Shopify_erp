@@ -24,6 +24,8 @@ from blogs.blog_metafield_defs import fetch_and_store_blog_metafield_defs, load_
 from blogs.blog_validator import validate_metafield_value
 from blogs.fetch_blogs import fetch_blogs, fetch_and_store_blogs_list
 
+from blogs.single_article_updater import sync_single_article
+
 
 def get_store_or_404(store_name, user):
     try:
@@ -364,4 +366,277 @@ class ArticleMetafieldDefsView(APIView):
             defs = fetch_and_store_article_metafield_defs(store_dir)
             return Response(defs)
         except Exception as e:
+            return Response({'error': str(e)}, status=500)
+        
+
+class SyncSingleArticleView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, store_name):
+        store = get_store_or_404(store_name, request.user)
+        if not store:
+            return Response({'error': 'Store not found'}, status=404)
+
+        article_id  = request.data.get('articleId', '__new__')
+        article_row = request.data.get('articleRow')
+        if not article_row:
+            return Response({'error': 'No articleRow provided'}, status=400)
+
+        csv_path = os.path.join(get_store_base(request.user.id, store_name), 'data', 'articles_master.csv')
+
+        try:
+            configure_shopify(store.domain, store.access_token, user_id=request.user.id)
+            initialize_store_paths()
+            result = with_auto_refresh(
+                store,
+                lambda token: configure_shopify(store.domain, token, user_id=request.user.id),
+                lambda: sync_single_article(article_id, article_row, csv_path)
+            )
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+
+        return Response(result)
+    
+
+BLOG_UPDATE_MUTATION = """
+mutation blogUpdate($id: ID!, $blog: BlogUpdateInput!) {
+  blogUpdate(id: $id, blog: $blog) {
+    blog {
+      id
+      title
+      handle
+      commentPolicy
+    }
+    userErrors { field message }
+  }
+}
+"""
+
+BLOG_DETAIL_QUERY = """
+query blogDetail($id: ID!) {
+  blog(id: $id) {
+    id
+    title
+    handle
+    commentPolicy
+    metafields(first: 50) {
+      edges {
+        node { namespace key value type }
+      }
+    }
+  }
+}
+"""
+
+
+class BlogDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, store_name):
+        blog_id = request.query_params.get('blog_id', '')
+        store = get_store_or_404(store_name, request.user)
+        if not store:
+            return Response({'error': 'Store not found'}, status=404)
+        try:
+            configure_shopify(store.domain, store.access_token, user_id=request.user.id)
+            initialize_store_paths()
+            result = graphql_request(BLOG_DETAIL_QUERY, {'id': blog_id})
+            blog = (result.get('data') or {}).get('blog') or {}
+            if not blog:
+                return Response({'error': 'Blog not found'}, status=404)
+
+            # Extract SEO
+            # Extract SEO and metafields dynamically
+            store_dir = get_store_base(request.user.id, store_name)
+            defs = load_blog_metafield_defs(store_dir)
+            metafields = {}
+            seo_title = ''
+            seo_description = ''
+
+            for edge in (blog.get('metafields') or {}).get('edges') or []:
+                node = edge['node']
+                ns_key = f"{node['namespace']}.{node['key']}"
+                if ns_key == 'global.title_tag':
+                    seo_title = node['value']
+                    continue
+                if ns_key == 'global.description_tag':
+                    seo_description = node['value']
+                    continue
+                metafields[ns_key] = node['value']
+
+            # Pad with all defined keys
+            for ns_key in defs:
+                if ns_key not in metafields:
+                    metafields[ns_key] = ''
+
+            return Response({
+                'id':             blog['id'],
+                'title':          blog.get('title', ''),
+                'handle':         blog.get('handle', ''),
+                'comment_policy': blog.get('commentPolicy', 'CLOSED'),
+                'seo_title':      seo_title,
+                'seo_description': seo_description,
+                'metafields':     metafields,
+                'metafield_defs': defs,
+            })
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+
+    def post(self, request, store_name):
+        blog_id = request.data.get('blog_id', '')
+        store = get_store_or_404(store_name, request.user)
+        if not store:
+            return Response({'error': 'Store not found'}, status=404)
+
+        data = request.data
+        title           = str(data.get('title', '')).strip()
+        comment_policy  = str(data.get('comment_policy', 'CLOSED')).strip().upper()
+        seo_title       = str(data.get('seo_title', '')).strip()
+        seo_description = str(data.get('seo_description', '')).strip()
+        metafields_input = data.get('metafields', {})
+
+        policy_map = {
+            'CLOSED': 'CLOSED', 'MODERATED': 'MODERATED', 'AUTO_PUBLISHED': 'AUTO_PUBLISHED',
+            'DISABLED': 'CLOSED', 'MODERATE': 'MODERATED', 'ALLOWED': 'AUTO_PUBLISHED',
+        }
+        comment_policy = policy_map.get(comment_policy, 'CLOSED')
+
+        try:
+            configure_shopify(store.domain, store.access_token, user_id=request.user.id)
+            initialize_store_paths()
+
+            # Update blog core fields
+            handle = str(data.get('handle', '')).strip()
+            blog_input = {'commentPolicy': comment_policy}
+            if title:
+                blog_input['title'] = title
+            if handle:
+                blog_input['handle'] = handle
+
+            result = graphql_request(BLOG_UPDATE_MUTATION, {'id': blog_id, 'blog': blog_input})
+            errs = ((result.get('data') or {}).get('blogUpdate') or {}).get('userErrors') or []
+            if errs:
+                return Response({'error': str(errs)}, status=400)
+
+            blog = ((result.get('data') or {}).get('blogUpdate') or {}).get('blog', {})
+
+            # Update SEO metafields
+            store_dir = get_store_base(request.user.id, store_name)
+            defs = load_blog_metafield_defs(store_dir)
+            seo_mf = []
+            if seo_title:
+                seo_mf.append({'ownerId': blog_id, 'namespace': 'global', 'key': 'title_tag',
+                                'value': seo_title, 'type': 'single_line_text_field'})
+            if seo_description:
+                seo_mf.append({'ownerId': blog_id, 'namespace': 'global', 'key': 'description_tag',
+                                'value': seo_description, 'type': 'single_line_text_field'})
+            if seo_mf:
+                graphql_request(METAFIELDS_SET_MUTATION, {'metafields': seo_mf})
+
+            # Update dynamic metafields
+            mf_to_set = []
+            for ns_key, value in (metafields_input or {}).items():
+                v = str(value or '').strip()
+                if not v or v.lower() in ('nan', 'none'):
+                    continue
+                namespace, key = ns_key.split('.', 1)
+                defn = defs.get(ns_key, {})
+                mf_type = defn.get('type', 'single_line_text_field')
+
+                # Serialize list types as JSON array
+                if mf_type.startswith('list.'):
+                    items = [x.strip() for x in v.split(',') if x.strip()]
+                    v = json.dumps(items)
+
+                mf_to_set.append({
+                    'ownerId': blog_id, 'namespace': namespace, 'key': key,
+                    'value': v, 'type': mf_type,
+                })
+            if mf_to_set:
+                graphql_request(METAFIELDS_SET_MUTATION, {'metafields': mf_to_set})
+
+            # Update blogs_list.json
+            path = os.path.join(store_dir, 'blogs_list.json')
+            if os.path.exists(path):
+                with open(path, 'r', encoding='utf-8') as f:
+                    blogs_list = json.load(f)
+                for b in blogs_list:
+                    if b['Blog ID'] == blog_id:
+                        b['Blog Title'] = blog.get('title', b['Blog Title'])
+                        b['Blog Handle'] = blog.get('handle', b['Blog Handle'])
+                with open(path, 'w', encoding='utf-8') as f:
+                    json.dump(blogs_list, f, indent=2, ensure_ascii=False)
+
+            return Response({'message': 'Blog updated successfully', 'blog': blog})
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+        
+
+BLOG_DELETE_MUTATION = """
+mutation blogDelete($id: ID!) {
+  blogDelete(id: $id) {
+    deletedBlogId
+    userErrors { field message }
+  }
+}
+"""
+
+class DeleteBlogView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, store_name):
+        store = get_store_or_404(store_name, request.user)
+        if not store:
+            return Response({'error': 'Store not found'}, status=404)
+
+        blog_id = request.data.get('blog_id', '')
+        if not blog_id:
+            return Response({'error': 'blog_id required'}, status=400)
+
+        try:
+            configure_shopify(store.domain, store.access_token, user_id=request.user.id)
+            initialize_store_paths()
+            result = graphql_request(BLOG_DELETE_MUTATION, {'id': blog_id})
+            errs = ((result.get('data') or {}).get('blogDelete') or {}).get('userErrors') or []
+            if errs:
+                return Response({'error': str(errs)}, status=400)
+
+            # Remove from blogs_list.json
+            store_dir = get_store_base(request.user.id, store_name)
+            path = os.path.join(store_dir, 'blogs_list.json')
+            if os.path.exists(path):
+                with open(path, 'r', encoding='utf-8') as f:
+                    blogs_list = json.load(f)
+                blogs_list = [b for b in blogs_list if b.get('Blog ID') != blog_id]
+                with open(path, 'w', encoding='utf-8') as f:
+                    json.dump(blogs_list, f, indent=2, ensure_ascii=False)
+
+            return Response({'message': 'Blog deleted'})
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+
+
+class FetchBlogListView(APIView):
+    """Re-fetches just the blog list from Shopify and updates blogs_list.json."""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, store_name):
+        store = get_store_or_404(store_name, request.user)
+        if not store:
+            return Response({'error': 'Store not found'}, status=404)
+
+        try:
+            configure_shopify(store.domain, store.access_token, user_id=request.user.id)
+            initialize_store_paths()
+            store_dir = get_store_base(request.user.id, store_name)
+            blogs = with_auto_refresh(
+                store,
+                lambda token: configure_shopify(store.domain, token, user_id=request.user.id),
+                lambda: fetch_and_store_blogs_list(store_dir)
+            )
+            fetch_and_store_blog_metafield_defs(store_dir)
+            return Response({'blogs': blogs, 'message': f'Fetched {len(blogs)} blogs'})
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
             return Response({'error': str(e)}, status=500)

@@ -7,6 +7,9 @@ import Products from './pages/Products'
 import Logs from './pages/Logs'
 import Settings from './pages/Settings'
 import Blogs from './pages/Blogs'
+import BlogSettings from './pages/BlogSettings'
+
+
 
 export default function App() {
   return (
@@ -17,6 +20,7 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="products" element={<Products />} />
           <Route path="blogs" element={<Blogs />} />
+          <Route path="blogs/settings" element={<BlogSettings />} />
           <Route path="logs" element={<Logs />} />
           <Route path="settings" element={<Settings />} />
         </Route>

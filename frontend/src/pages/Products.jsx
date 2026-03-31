@@ -227,9 +227,7 @@ export default function Products() {
             const duration_seconds = Math.round((Date.now() - startTime) / 1000)
             handleSyncSummary({ done: true, ...result, duration_seconds })
             setFetchMsg(`Done — ${result.updated} updated, ${result.skipped} skipped, ${result.errors} errors`)
-
-            const freshRows = await getProducts(selectedStore.store_name)
-            if (freshRows.length) handleRowsLoaded(freshRows)
+            
         } catch (e) {
             setFetchMsg('Sync failed — check console')
             const duration_seconds = Math.round((Date.now() - startTime) / 1000)

@@ -367,3 +367,42 @@
     font-weight: 600;
     cursor: pointer;
 }
+
+/* Sync summary */
+.syncSummary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.syncDone {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: #0f8a5f;
+}
+
+.syncStat {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+    font-size: 10px;
+    color: #9b8a73;
+    letter-spacing: 0.06em;
+}
+
+.syncStatError {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+    font-size: 10px;
+    color: #c0392b;
+    letter-spacing: 0.06em;
+}
+
+.syncNum {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2f2417;
+}
